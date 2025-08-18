@@ -23,5 +23,10 @@
             <artifactId>Provider-Common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>io.ryan</groupId>
+            <artifactId>ryanRpc</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
