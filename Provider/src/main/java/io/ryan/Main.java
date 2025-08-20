@@ -1,8 +1,10 @@
 package io.ryan;
 
 
+import io.ryan.common.URL;
 import io.ryan.protocol.HttpServer;
 import io.ryan.register.LocalRegister;
+import io.ryan.register.RedisRegister;
 import io.ryan.service.HelloService;
 import io.ryan.serviceImpl.HelloServiceImpl;
 
@@ -11,6 +13,8 @@ import io.ryan.serviceImpl.HelloServiceImpl;
 public class Main {
     public static void main(String[] args) {
         LocalRegister.register(HelloService.class.getName(), HelloServiceImpl.class);
+        // 注册中心注册
+        RedisRegister.register(HelloService.class.getName(), new URL("localhost", 8080));
 
         HttpServer server = new HttpServer();
         server.start("localhost", 8080);
