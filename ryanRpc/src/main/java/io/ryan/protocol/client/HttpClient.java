@@ -1,4 +1,4 @@
-package io.ryan.protocol;
+package io.ryan.protocol.client;
 
 import io.ryan.common.Invocation;
 import org.apache.commons.io.IOUtils;

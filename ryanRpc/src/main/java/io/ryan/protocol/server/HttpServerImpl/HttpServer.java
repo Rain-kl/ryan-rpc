@@ -1,5 +1,10 @@
-package io.ryan.protocol;
+package io.ryan.protocol.server.HttpServerImpl;
 
+import io.ryan.protocol.server.RpcServer;
+import io.ryan.protocol.server.RpcServerAbs;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.catalina.*;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
@@ -7,22 +12,28 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.startup.Tomcat;
 
-public class HttpServer {
 
-    public void start(String hostname, int port) {
+
+public class HttpServer extends RpcServerAbs implements RpcServer {
+
+    public HttpServer(String host, Integer port) {
+        super(host, port);
+    }
+
+    public void start() {
         Tomcat tomcat = new Tomcat();
 
         Server server = tomcat.getServer();
         Service service = server.findService("Tomcat");
 
         Connector connector = new Connector();
-        connector.setPort(port);
+        connector.setPort(this.getPort());
 
         Engine engine = new StandardEngine();
-        engine.setDefaultHost(hostname);
+        engine.setDefaultHost(this.getHostname());
 
         Host host = new StandardHost();
-        host.setName(hostname);
+        host.setName(this.getHostname());
 
         String ContextPath = "";
         Context context = new StandardContext();
@@ -44,7 +55,6 @@ public class HttpServer {
         } catch (LifecycleException e) {
             throw new RuntimeException(e);
         }
-
 
     }
 }

@@ -4,7 +4,7 @@ import io.ryan.common.Invocation;
 import io.ryan.common.URL;
 import io.ryan.loadbalance.LoadBalance;
 import io.ryan.loadbalance.RandomLoadBalance;
-import io.ryan.protocol.HttpClient;
+import io.ryan.protocol.client.HttpClient;
 import io.ryan.register.RedisRegister;
 
 import java.lang.reflect.Proxy;
