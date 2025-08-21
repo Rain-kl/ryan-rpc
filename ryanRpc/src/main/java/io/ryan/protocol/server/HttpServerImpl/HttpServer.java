@@ -2,9 +2,6 @@ package io.ryan.protocol.server.HttpServerImpl;
 
 import io.ryan.protocol.server.RpcServer;
 import io.ryan.protocol.server.RpcServerAbs;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.catalina.*;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;

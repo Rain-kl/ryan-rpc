@@ -1,6 +1,8 @@
 package io.ryan.proxy;
 
-import io.ryan.common.Invocation;
+
+import io.ryan.common.Message.RpcRequest;
+import io.ryan.common.Message.RpcResponse;
 import io.ryan.common.URL;
 import io.ryan.loadbalance.LoadBalance;
 import io.ryan.loadbalance.RandomLoadBalance;
@@ -15,8 +17,12 @@ public class ProxyFactory {
     public static <T> T getProxy(Class<T> interfaceClass) {
         Object proxyInstance = Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass},
                 (proxy, method, args) -> {
-                    Invocation invocation = new Invocation(interfaceClass.getName(), method.getName(), method.getParameterTypes(), args);
-                    HttpClient httpClient = new HttpClient();
+                    RpcRequest rpcRequest = RpcRequest.builder()
+                            .interfaceName(interfaceClass.getName())
+                            .methodName(method.getName())
+                            .parameterTypes(method.getParameterTypes())
+                            .parameters(args).build();
+
 
 //                    // 从注册中心获取服务提供者的地址列表
                     List<URL> urls = RedisRegister.get(interfaceClass.getName());
@@ -24,8 +30,9 @@ public class ProxyFactory {
                     LoadBalance<URL> loadBalance = new RandomLoadBalance();
                     URL selected = loadBalance.select(urls);
 //                    URL selected = new URL("localhost", 8080); // For testing, replace with actual load balancing logic
-                    Object result = httpClient.send(selected.getHostname(), selected.getPort(), invocation);
-                    return result;
+                    HttpClient httpClient = new HttpClient(selected.getHostname(), selected.getPort());
+                    RpcResponse rpcResponse = httpClient.sendRequest(rpcRequest);
+                    return rpcResponse.getData();
                 });
 
         return (T) proxyInstance;

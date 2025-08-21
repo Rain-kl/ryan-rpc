@@ -1,20 +1,26 @@
 package io.ryan.protocol.client;
 
-import io.ryan.common.Invocation;
-import org.apache.commons.io.IOUtils;
+
+import io.ryan.common.Message.RpcRequest;
+import io.ryan.common.Message.RpcResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
-public class HttpClient {
+public class HttpClient extends RpcClientAbs implements RpcClient {
 
-    public String send(String hostname, int port, Invocation invocation) {
+    public HttpClient(String hostname, Integer port) {
+        super(hostname, port);
+    }
+
+    @Override
+    public RpcResponse sendRequest(RpcRequest rpcRequest) {
         try {
             URL url = new URL("http", hostname, port, "/");
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -25,20 +31,26 @@ public class HttpClient {
             OutputStream outputStream = httpURLConnection.getOutputStream();
             // Serialize the invocation object to JSON or any other format
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-            objectOutputStream.writeObject(invocation);
+            objectOutputStream.writeObject(rpcRequest);
             objectOutputStream.flush();
             objectOutputStream.close();
 
-            // Get the response code
+            // Get the response and deserialize it
             InputStream inputStream = httpURLConnection.getInputStream();
+            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            RpcResponse rpcResponse = (RpcResponse) objectInputStream.readObject();
+            objectInputStream.close();
 
-            return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+            return rpcResponse;
 
         } catch (MalformedURLException e) {
             System.out.println("Malformed URL Exception occurred while sending request: " + e.getMessage());
             throw new RuntimeException(e);
         } catch (IOException e) {
             System.out.println("IO Exception occurred while sending request: " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class not found while deserializing response: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

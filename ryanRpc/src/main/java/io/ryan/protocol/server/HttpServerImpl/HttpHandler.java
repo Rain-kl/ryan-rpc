@@ -1,30 +1,36 @@
 package io.ryan.protocol.server.HttpServerImpl;
 
-import io.ryan.common.Invocation;
-import io.ryan.register.LocalRegister;
+import io.ryan.common.Message.RpcRequest;
+import io.ryan.common.Message.RpcResponse;
+import io.ryan.provider.ServiceProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 @Slf4j
 public class HttpHandler {
 
-    public void handler(HttpServletRequest req, HttpServletResponse resp){
+    public void handler(HttpServletRequest req, HttpServletResponse resp) {
         try {
             // 反序列化请求体中的 Invocation 对象, 此处使用的是 Java 内置的序列化机制
-            Invocation invocation = (Invocation) new ObjectInputStream(req.getInputStream()).readObject();
-            String interfaceName = invocation.getInterfaceName();
-            Class<?> classImpl = LocalRegister.get(interfaceName);
-            Method method = classImpl.getMethod(invocation.getMethodName(), invocation.getParameterTypes());
-            Object result = method.invoke(classImpl.getDeclaredConstructor().newInstance(), invocation.getParameters());
-            // 将结果写入响应
-            IOUtils.write(result.toString(), resp.getOutputStream(), "UTF-8");
+            RpcRequest rpcRequest = (RpcRequest) new ObjectInputStream(req.getInputStream()).readObject();
+            String interfaceName = rpcRequest.getInterfaceName();
+            Class<?> classImpl = ServiceProvider.getService(interfaceName);
+            Method method = classImpl.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
+            Object result = method.invoke(classImpl.getDeclaredConstructor().newInstance(), rpcRequest.getParameters());
+
+            // 创建 RpcResponse 对象并序列化写入响应
+            RpcResponse rpcResponse = RpcResponse.success(result);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(resp.getOutputStream());
+            objectOutputStream.writeObject(rpcResponse);
+            objectOutputStream.flush();
+            objectOutputStream.close();
 
         } catch (IOException e) {
             log.error("IO Exception occurred while handling request: {}", e.getMessage());
@@ -45,6 +51,5 @@ public class HttpHandler {
             log.error("Instantiation exception: {}", e.getMessage());
             throw new RuntimeException(e);
         }
-
     }
 }
