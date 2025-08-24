@@ -8,7 +8,7 @@ import io.ryan.common.Message.RpcResponse;
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcResponse rpcResponse) throws Exception {
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcResponse rpcResponse) {
         AttributeKey<RpcResponse> key = AttributeKey.valueOf("RpcResponse");
         channelHandlerContext.channel().attr(key).set(rpcResponse);
         // 接收到响应后关闭连接

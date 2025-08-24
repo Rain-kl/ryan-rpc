@@ -10,7 +10,7 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class NettyClientInitializer extends ChannelInitializer<SocketChannel> {
     @Override
-    protected void initChannel(SocketChannel socketChannel) throws Exception {
+    protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
 
         //消息格式 【长度】【消息体】，解决沾包问题

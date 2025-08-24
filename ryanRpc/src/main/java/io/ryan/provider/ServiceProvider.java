@@ -9,7 +9,7 @@ public class ServiceProvider {
 
 
     public static void register(Class<?> service){
-        String serviceName=service.getName();
+//        String serviceName=service.getName();
         Class<?>[] interfaceName=service.getInterfaces();
 
         for (Class<?> clazz:interfaceName){

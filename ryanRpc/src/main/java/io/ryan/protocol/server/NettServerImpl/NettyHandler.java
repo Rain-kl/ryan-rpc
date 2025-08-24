@@ -14,9 +14,7 @@ public class NettyHandler extends SimpleChannelInboundHandler<RpcRequest> {
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcRequest rpcRequest) throws Exception {
         RpcResponse result = getResponse(rpcRequest);
         // 发送响应并在发送完成后关闭连接
-        channelHandlerContext.writeAndFlush(result).addListener(future -> {
-            channelHandlerContext.close();
-        });
+        channelHandlerContext.writeAndFlush(result).addListener(future -> channelHandlerContext.close());
     }
 
     private static RpcResponse getResponse(RpcRequest rpcRequest)

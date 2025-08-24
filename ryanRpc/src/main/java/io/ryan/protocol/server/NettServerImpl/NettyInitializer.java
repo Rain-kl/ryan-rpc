@@ -10,7 +10,7 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class NettyInitializer extends ChannelInitializer<SocketChannel> {
     @Override
-    protected void initChannel(SocketChannel socketChannel) throws Exception {
+    protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
 
         //消息格式 【长度】【消息体】，解决沾包问题
@@ -23,7 +23,7 @@ public class NettyInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new ObjectEncoder());
         //使用了Netty中的ObjectDecoder，它用于将字节流解码为 Java 对象。
         //在ObjectDecoder的构造函数中传入了一个ClassResolver 对象，用于解析类名并加载相应的类。
-        pipeline.addLast(new ObjectDecoder(className -> Class.forName(className)));
+        pipeline.addLast(new ObjectDecoder(Class::forName));
 
         pipeline.addLast(new NettyHandler());
     }
