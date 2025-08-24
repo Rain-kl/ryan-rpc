@@ -3,8 +3,8 @@ package io.ryan.proxy;
 
 import io.ryan.common.Message.RpcRequest;
 import io.ryan.common.Message.RpcResponse;
-import io.ryan.common.dto.ServiceURI;
 import io.ryan.common.constant.RpcProtocol;
+import io.ryan.common.dto.ServiceURI;
 import io.ryan.loadbalance.RandomLoadBalance;
 import io.ryan.protocol.client.HttpClient.HttpClientImpl;
 import io.ryan.protocol.client.NettyClientImpl.NettyClient;
@@ -13,7 +13,6 @@ import io.ryan.serviceCenter.ServiceCenter;
 import io.ryan.serviceCenter.ZKCenter;
 
 import java.lang.reflect.Proxy;
-import java.net.URI;
 
 public class ProxyFactory {
 
@@ -27,10 +26,9 @@ public class ProxyFactory {
                             .parameterTypes(method.getParameterTypes())
                             .parameters(args).build();
 
-                    ServiceCenter serviceCenter = new ZKCenter(new RandomLoadBalance<>());
+                    ServiceCenter serviceCenter = new ZKCenter("localhost", 2181, new RandomLoadBalance<>());
 //                    // 从注册中心获取服务提供者的地址列表
-                    URI uri = serviceCenter.serviceDiscovery(interfaceClass.getName());
-                    ServiceURI serviceURI = ServiceURI.of(uri);
+                    ServiceURI serviceURI = serviceCenter.serviceDiscovery(interfaceClass);
                     RpcClient rpcClient = getRpcClient(serviceURI);
                     RpcResponse rpcResponse = rpcClient.sendRequest(rpcRequest);
 

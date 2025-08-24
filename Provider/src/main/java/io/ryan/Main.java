@@ -1,7 +1,5 @@
 package io.ryan;
 
-import io.ryan.common.dto.ServiceURI;
-import io.ryan.common.constant.RpcProtocol;
 import io.ryan.protocol.server.NettServerImpl.NettyServer;
 import io.ryan.protocol.server.RpcServer;
 import io.ryan.protocol.server.RpcServerBuilder;
@@ -16,15 +14,14 @@ public class Main {
         ServiceProvider.register(HelloServiceImpl.class);
 
         // 注册中心注册
-        new ZKCenter().register(
-                HelloService.class.getName(),
-                new ServiceURI("localhost", 8080, RpcProtocol.TCP)
-        );
+        ZKCenter zkCenter = new ZKCenter("localhost", 2181);
+        zkCenter.register(HelloService.class);
 
         RpcServer server = RpcServerBuilder.builder()
                 .host("localhost")
                 .port(8080)
                 .rpcServer(NettyServer.class)
+                .serviceCenter(zkCenter)
                 .build();
 
         server.start();

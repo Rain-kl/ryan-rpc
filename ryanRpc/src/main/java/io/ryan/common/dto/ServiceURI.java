@@ -27,9 +27,9 @@ public class ServiceURI {
         return encoder.encodeToString(this.toString().getBytes());
     }
 
-    public static String decode(String encodedString) {
+    public static ServiceURI decode(String encodedString) {
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] decodedBytes = decoder.decode(encodedString);
-        return new String(decodedBytes);
+        return ServiceURI.of(URI.create(new String(decodedBytes)));
     }
 }

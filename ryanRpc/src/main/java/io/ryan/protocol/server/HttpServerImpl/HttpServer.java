@@ -1,5 +1,6 @@
 package io.ryan.protocol.server.HttpServerImpl;
 
+import io.ryan.common.constant.RpcProtocol;
 import io.ryan.protocol.server.RpcServer;
 import io.ryan.protocol.server.RpcServerAbs;
 import org.apache.catalina.*;
@@ -53,5 +54,10 @@ public class HttpServer extends RpcServerAbs implements RpcServer {
             throw new RuntimeException(e);
         }
 
+    }
+
+    @Override
+    public String getProtocol() {
+        return RpcProtocol.HTTP;
     }
 }

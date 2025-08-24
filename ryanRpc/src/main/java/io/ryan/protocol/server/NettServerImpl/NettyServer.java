@@ -4,6 +4,7 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.ryan.common.constant.RpcProtocol;
 import io.ryan.protocol.server.RpcServer;
 import io.ryan.protocol.server.RpcServerAbs;
 
@@ -32,5 +33,10 @@ public class NettyServer extends RpcServerAbs implements RpcServer {
             }
         });
 
+    }
+
+    @Override
+    public String getProtocol() {
+        return RpcProtocol.TCP;
     }
 }

@@ -2,12 +2,12 @@ package io.ryan.serviceCenter;
 
 import io.ryan.common.dto.ServiceURI;
 
-import java.net.URI;
-
 public interface ServiceCenter {
 
-    void register(String serviceName, ServiceURI ServiceURI);
+    void register(Class<?> service);
 
-    URI serviceDiscovery(String serviceName);
+    void start(ServiceURI uri) throws Exception;
+
+    ServiceURI serviceDiscovery(Class<?> service);
 
 }
