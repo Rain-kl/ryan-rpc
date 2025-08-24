@@ -1,8 +1,10 @@
-package io.ryan.protocol.client;
+package io.ryan.protocol.client.HttpClient;
 
 
 import io.ryan.common.Message.RpcRequest;
 import io.ryan.common.Message.RpcResponse;
+import io.ryan.protocol.client.RpcClient;
+import io.ryan.protocol.client.RpcClientAbs;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,16 +15,16 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class HttpClient extends RpcClientAbs implements RpcClient {
+public class HttpClientImpl extends RpcClientAbs implements RpcClient {
 
-    public HttpClient(String hostname, Integer port) {
+    public HttpClientImpl(String hostname, Integer port) {
         super(hostname, port);
     }
 
     @Override
     public RpcResponse sendRequest(RpcRequest rpcRequest) {
         try {
-            URL url = new URL("http", hostname, port, "/");
+            URL url = new URL("http", getHostname(), getPort(), "/");
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
 
             httpURLConnection.setRequestMethod("POST");

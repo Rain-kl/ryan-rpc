@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 控制台输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 设置 Netty 相关包的日志级别为 WARN，关闭 DEBUG 和 INFO -->
+    <logger name="io.netty" level="WARN" />
+    <logger name="io.netty.handler" level="WARN" />
+    <logger name="io.netty.channel" level="WARN" />
+    <logger name="io.netty.util" level="WARN" />
+    <logger name="io.netty.bootstrap" level="WARN" />
+
+    <!-- 设置你自己的包的日志级别 -->
+    <logger name="io.ryan" level="INFO" />
+
+    <!-- 根日志级别 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>

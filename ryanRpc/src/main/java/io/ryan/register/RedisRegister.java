@@ -1,6 +1,6 @@
 package io.ryan.register;
 
-import io.ryan.common.URL;
+import io.ryan.common.dto.URI;
 import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisClientConfig;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class RedisRegister{
+public class RedisRegister {
 
     private static final Jedis jedis;
 
@@ -28,23 +28,23 @@ public class RedisRegister{
         }));
     }
 
-    public static void register(String interfaceName, URL url) {
+    public static void register(String interfaceName, URI URI) {
         String key = "ryanRpc:" + interfaceName;
-        jedis.sadd(key, url.getHostname() + ":" + url.getPort());
+        java.net.URI uri = java.net.URI.create(URI.getProtocol() + "://" + URI.getHostname() + ":" + URI.getPort());
+        jedis.sadd(key, uri.toString());
     }
 
-    public static List<URL> get(String interfaceName) {
+    public static List<URI> get(String interfaceName) {
         String key = "ryanRpc:" + interfaceName;
-        List<URL> urls = new ArrayList<>();
+        List<URI> URIS = new ArrayList<>();
         for (String value : jedis.smembers(key)) {
-            String[] parts = value.split(":");
-            if (parts.length == 2) {
-                String hostname = parts[0];
-                int port = Integer.parseInt(parts[1]);
-                urls.add(new URL(hostname, port));
-            }
+            java.net.URI uri = java.net.URI.create(value);
+            String protocol = uri.getScheme();
+            String host = uri.getHost();
+            int port = uri.getPort();
+            URIS.add(new URI(host, port, protocol));
         }
-        return urls;
+        return URIS;
 
     }
 

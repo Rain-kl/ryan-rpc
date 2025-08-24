@@ -7,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public abstract class RpcServerAbs {
 
-    public String hostname;
-    public Integer port;
+    private String hostname;
+    private Integer port;
 }

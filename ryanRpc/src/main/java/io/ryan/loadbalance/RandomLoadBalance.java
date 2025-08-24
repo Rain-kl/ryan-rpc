@@ -1,16 +1,16 @@
 package io.ryan.loadbalance;
 
-import io.ryan.common.URL;
+import io.ryan.common.dto.URI;
 
 import java.util.List;
 import java.util.Random;
 
-public class RandomLoadBalance implements LoadBalance<URL> {
+public class RandomLoadBalance implements LoadBalance<URI> {
 
     @Override
-    public URL select(List<URL> urls) {
+    public URI select(List<URI> URIS) {
         Random random = new Random();
-        int nextInt = random.nextInt(urls.size());
-        return urls.get(nextInt);
+        int nextInt = random.nextInt(URIS.size());
+        return URIS.get(nextInt);
     }
 }
