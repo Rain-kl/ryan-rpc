@@ -1,16 +1,19 @@
 package io.ryan.loadbalance;
 
-import io.ryan.common.dto.URI;
-
 import java.util.List;
 import java.util.Random;
 
-public class RandomLoadBalance implements LoadBalance<URI> {
+public class RandomLoadBalance<T> implements LoadBalance<T> {
 
     @Override
-    public URI select(List<URI> URIS) {
-        Random random = new Random();
-        int nextInt = random.nextInt(URIS.size());
-        return URIS.get(nextInt);
+    public T select(List<T> list) {
+        try {
+            Random random = new Random();
+            int nextInt = random.nextInt(list.size());
+            return list.get(nextInt);
+        }catch (Exception e){
+            throw new RuntimeException("LoadBalance Error: list is empty");
+        }
+
     }
 }
