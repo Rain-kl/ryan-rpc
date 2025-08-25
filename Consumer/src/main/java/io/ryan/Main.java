@@ -15,6 +15,15 @@ public class Main {
         System.out.println(result);
         result = helloService.sayHello("Ryan");
         System.out.println(result);
+        result = helloService.sayHello("Ryan");
+        System.out.println(result);
+        result = helloService.sayHello("Ryan");
+        System.out.println(result);
+        result = helloService.sayHello("Ryan");
+        System.out.println(result);
+        result = helloService.sayHello("Ryan");
+        System.out.println(result);
+
 
     }
 }

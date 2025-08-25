@@ -10,7 +10,7 @@ import io.ryan.protocol.client.HttpClient.HttpClientImpl;
 import io.ryan.protocol.client.NettyClientImpl.NettyClient;
 import io.ryan.protocol.client.RpcClient;
 import io.ryan.serviceCenter.ServiceCenter;
-import io.ryan.serviceCenter.ZKCenter;
+import io.ryan.serviceCenter.zookeeperImpl.ZKCenter;
 
 import java.lang.reflect.Proxy;
 

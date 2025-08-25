@@ -5,11 +5,11 @@ import io.ryan.protocol.server.RpcServer;
 import io.ryan.protocol.server.RpcServerBuilder;
 import io.ryan.provider.ServiceProvider;
 import io.ryan.service.HelloService;
-import io.ryan.serviceCenter.ZKCenter;
+import io.ryan.serviceCenter.zookeeperImpl.ZKCenter;
 import io.ryan.serviceImpl.HelloServiceImpl;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         ServiceProvider.register(HelloServiceImpl.class);
 

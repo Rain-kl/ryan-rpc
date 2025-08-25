@@ -1,8 +1,10 @@
-package io.ryan.serviceCenter;
+package io.ryan.serviceCenter.zookeeperImpl;
 
 import io.ryan.common.dto.ServiceURI;
 import io.ryan.loadbalance.LoadBalance;
 import io.ryan.loadbalance.RandomLoadBalance;
+import io.ryan.serviceCenter.ServiceCenter;
+import io.ryan.serviceCenter.cache.ServiceCache;
 import lombok.Data;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -27,17 +29,20 @@ public class ZKCenter implements ServiceCenter {
     private String hostname;
     private Integer port;
 
-    public ZKCenter(String hostname, Integer port) {
+    ServiceCache serviceCache = new ServiceCache();
+    Integer retryTimes = 3;
+
+    public ZKCenter(String hostname, Integer port) throws InterruptedException {
         initZookeeperConnection(hostname, port);
         this.loadBalancePolicy = new RandomLoadBalance<>();
     }
 
-    public ZKCenter(String hostname, Integer port, LoadBalance<String> loadBalancePolicy) {
+    public ZKCenter(String hostname, Integer port, LoadBalance<String> loadBalancePolicy) throws InterruptedException {
         initZookeeperConnection(hostname, port);
         this.loadBalancePolicy = loadBalancePolicy;
     }
 
-    private void initZookeeperConnection(String hostname, Integer port) {
+    private void initZookeeperConnection(String hostname, Integer port) throws InterruptedException {
         this.hostname = hostname;
         this.port = port;
         // 指数时间重试
@@ -51,10 +56,13 @@ public class ZKCenter implements ServiceCenter {
                 .build();
         this.client.start();
         System.out.println("zookeeper 连接成功");
+        ZKDataWatcher zkDataWatcher = new ZKDataWatcher(client,serviceCache);
+        zkDataWatcher.watchToUpdate(ROOT_PATH);
     }
 
     /**
      * 注册服务, 仅添加到本地列表
+     *
      * @param service 需要被远程调用的服务类
      */
     @Override
@@ -64,12 +72,13 @@ public class ZKCenter implements ServiceCenter {
 
     /**
      * 提交注册的服务到zookeeper
+     *
      * @param serviceURI 服务地址
      */
     @Override
     public void start(ServiceURI serviceURI) throws Exception {
         for (String serviceName : services) {
-            // 路径地址，一个/代表一个节点
+            // 因为存入的 uri 如果携带/则无法创建节点,所以需要encode
             String path = "/" + serviceName + "/" + serviceURI.encode();
             try {
                 // serviceName创建成永久节点，服务提供者下线时，不删服务名，只删地址
@@ -80,7 +89,11 @@ public class ZKCenter implements ServiceCenter {
             } catch (KeeperException.NodeExistsException e) {
                 //删除掉重复注册的节点
                 client.delete().forPath(path);
-                throw new RuntimeException("服务已存在，已删除重复节点，请重新注册", e);
+                if (retryTimes <= 0) {
+                    throw new RuntimeException("服务已存在，已删除重复节点，请重新注册", e);
+                }
+                retryTimes--;
+                start(serviceURI);
             } catch (Exception e) {
                 throw new RuntimeException("服务注册失败", e);
             }
@@ -90,9 +103,17 @@ public class ZKCenter implements ServiceCenter {
 
     @Override
     public ServiceURI serviceDiscovery(Class<?> service) {
+        List<String> serviceFromCache = serviceCache.getServiceFromCache(service.getName());
+        if (serviceFromCache != null && !serviceFromCache.isEmpty()) {
+            return ServiceURI.decode(loadBalancePolicy.select(serviceFromCache));
+        }
         try {
             List<String> uris = client.getChildren().forPath("/" + service.getName());
             // 这里默认用的第一个，后面加负载均衡
+            serviceCache.delete(service.getName());
+            for (String uri : uris) {
+                serviceCache.addServiceToCache(service.getName(), uri);
+            }
             return ServiceURI.decode(loadBalancePolicy.select(uris));
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("服务不存在", e);
