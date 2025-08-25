@@ -3,6 +3,7 @@ package io.ryan.serviceCenter.zookeeperImpl;
 import io.ryan.common.dto.ServiceURI;
 import io.ryan.loadbalance.LoadBalance;
 import io.ryan.loadbalance.RandomLoadBalance;
+import io.ryan.provider.ServiceProvider;
 import io.ryan.serviceCenter.ServiceCenter;
 import io.ryan.serviceCenter.cache.ServiceCache;
 import lombok.Data;
@@ -68,7 +69,12 @@ public class ZKCenter implements ServiceCenter {
      */
     @Override
     public void register(Class<?> service) {
-        services.add(service.getName());
+        ServiceProvider.register(service);
+        for(Class<?> serviceInterface:service.getInterfaces()){
+            String interfaceName = serviceInterface.getName();
+            if(!services.contains(interfaceName))
+                services.add(interfaceName);
+        }
     }
 
     /**

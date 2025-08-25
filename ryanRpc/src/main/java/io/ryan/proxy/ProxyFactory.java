@@ -9,6 +9,7 @@ import io.ryan.loadbalance.RandomLoadBalance;
 import io.ryan.protocol.client.HttpClient.HttpClientImpl;
 import io.ryan.protocol.client.NettyClientImpl.NettyClient;
 import io.ryan.protocol.client.RpcClient;
+import io.ryan.serviceCenter.BaseServiceCenter;
 import io.ryan.serviceCenter.ServiceCenter;
 import io.ryan.serviceCenter.zookeeperImpl.ZKCenter;
 
@@ -16,9 +17,17 @@ import java.lang.reflect.Proxy;
 
 public class ProxyFactory {
 
-    @SuppressWarnings("unchecked")
+
     public static <T> T getProxy(Class<T> interfaceClass) throws InterruptedException {
-        ServiceCenter serviceCenter = new ZKCenter("localhost", 2181, new RandomLoadBalance<>());
+        ServiceCenter serviceCenter = new BaseServiceCenter(
+                new ZKCenter("localhost", 2181, new RandomLoadBalance<>())
+        );
+        return ProxyFactory.getProxy(interfaceClass, serviceCenter);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getProxy(Class<T> interfaceClass, ServiceCenter serviceCenter) throws InterruptedException {
+//        ServiceCenter serviceCenter = new LocalServiceCenter("localhost", 8080, RpcProtocol.TCP);
         Object proxyInstance = Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass},
                 (proxy, method, args) -> {
                     RpcRequest rpcRequest = RpcRequest.builder()
@@ -36,6 +45,7 @@ public class ProxyFactory {
 
         return (T) proxyInstance;
     }
+
 
     private static RpcClient getRpcClient(ServiceURI selected) {
         RpcClient rpcClient;
