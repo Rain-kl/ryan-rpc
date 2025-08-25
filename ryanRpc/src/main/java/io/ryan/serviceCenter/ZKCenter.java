@@ -28,16 +28,16 @@ public class ZKCenter implements ServiceCenter {
     private Integer port;
 
     public ZKCenter(String hostname, Integer port) {
-        init(hostname, port);
+        initZookeeperConnection(hostname, port);
         this.loadBalancePolicy = new RandomLoadBalance<>();
     }
 
     public ZKCenter(String hostname, Integer port, LoadBalance<String> loadBalancePolicy) {
-        init(hostname, port);
+        initZookeeperConnection(hostname, port);
         this.loadBalancePolicy = loadBalancePolicy;
     }
 
-    void init(String hostname, Integer port) {
+    private void initZookeeperConnection(String hostname, Integer port) {
         this.hostname = hostname;
         this.port = port;
         // 指数时间重试
@@ -53,11 +53,19 @@ public class ZKCenter implements ServiceCenter {
         System.out.println("zookeeper 连接成功");
     }
 
+    /**
+     * 注册服务, 仅添加到本地列表
+     * @param service 需要被远程调用的服务类
+     */
     @Override
     public void register(Class<?> service) {
         services.add(service.getName());
     }
 
+    /**
+     * 提交注册的服务到zookeeper
+     * @param serviceURI 服务地址
+     */
     @Override
     public void start(ServiceURI serviceURI) throws Exception {
         for (String serviceName : services) {
@@ -73,7 +81,7 @@ public class ZKCenter implements ServiceCenter {
                 //删除掉重复注册的节点
                 client.delete().forPath(path);
                 throw new RuntimeException("服务已存在，已删除重复节点，请重新注册", e);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException("服务注册失败", e);
             }
         }

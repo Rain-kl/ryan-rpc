@@ -1,5 +1,6 @@
 package io.ryan.common.Message;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,6 +9,7 @@ import java.io.Serializable;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class RpcResponse implements Serializable {
     //状态信息
     private int code;
