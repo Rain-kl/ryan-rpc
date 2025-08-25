@@ -17,7 +17,8 @@ import java.lang.reflect.Proxy;
 public class ProxyFactory {
 
     @SuppressWarnings("unchecked")
-    public static <T> T getProxy(Class<T> interfaceClass) {
+    public static <T> T getProxy(Class<T> interfaceClass) throws InterruptedException {
+        ServiceCenter serviceCenter = new ZKCenter("localhost", 2181, new RandomLoadBalance<>());
         Object proxyInstance = Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass},
                 (proxy, method, args) -> {
                     RpcRequest rpcRequest = RpcRequest.builder()
@@ -25,8 +26,6 @@ public class ProxyFactory {
                             .methodName(method.getName())
                             .parameterTypes(method.getParameterTypes())
                             .parameters(args).build();
-
-                    ServiceCenter serviceCenter = new ZKCenter("localhost", 2181, new RandomLoadBalance<>());
 //                    // 从注册中心获取服务提供者的地址列表
                     ServiceURI serviceURI = serviceCenter.serviceDiscovery(interfaceClass);
                     RpcClient rpcClient = getRpcClient(serviceURI);
