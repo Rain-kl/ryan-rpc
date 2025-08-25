@@ -17,18 +17,15 @@ public class NettyClient extends RpcClientAbs implements RpcClient {
         super(hostname, port);
     }
 
-    private static final NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
-    private static final Bootstrap bootstrap;
-
-    static {
-        bootstrap = new Bootstrap();
+    @Override
+    public RpcResponse sendRequest(RpcRequest rpcRequest) {
+        // 为每次调用创建新的 EventLoopGroup，调用完成后立即关闭
+        NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+        Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new NettyClientInitializer());
-    }
 
-    @Override
-    public RpcResponse sendRequest(RpcRequest rpcRequest) {
         try {
             ChannelFuture channelFuture = bootstrap.connect(getHostname(), getPort()).sync();
             Channel channel = channelFuture.channel();
@@ -41,14 +38,14 @@ public class NettyClient extends RpcClientAbs implements RpcClient {
             RpcResponse rpcResponse = channel.attr(key).get();
             System.out.println(rpcResponse);
 
-            // 关闭 EventLoopGroup，让 JVM 能够正常退出
-            eventLoopGroup.shutdownGracefully();
-
             return rpcResponse;
 
         } catch (InterruptedException e) {
             System.out.println("client error");
             throw new RuntimeException(e);
+        } finally {
+            // 确保在方法结束时关闭 EventLoopGroup
+            eventLoopGroup.shutdownGracefully();
         }
     }
 }

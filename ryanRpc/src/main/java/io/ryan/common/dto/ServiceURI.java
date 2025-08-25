@@ -27,6 +27,11 @@ public class ServiceURI {
         return encoder.encodeToString(this.toString().getBytes());
     }
 
+    /**
+     * Base64解码
+     * @param encodedString 编码后的字符串
+     * @return ServiceURI
+     */
     public static ServiceURI decode(String encodedString) {
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] decodedBytes = decoder.decode(encodedString);
