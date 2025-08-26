@@ -23,7 +23,7 @@ public class LocalServiceCenter implements ServiceCenter {
     }
 
     @Override
-    public void start(ServiceURI uri) throws Exception {
+    public void start(ServiceURI uri) {
         LocalServiceCenter.serviceURI = uri;
         System.out.println("Local Service Center started at " + uri);
     }

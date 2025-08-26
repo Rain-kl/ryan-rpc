@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public class JsonSerializerTest {
 
-    JsonSerializer jsonSerializer = new JsonSerializer();
+    final JsonSerializer jsonSerializer = new JsonSerializer();
     byte[] serializeBytes;
 
     @Test

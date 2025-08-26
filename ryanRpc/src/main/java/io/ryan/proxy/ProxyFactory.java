@@ -26,7 +26,7 @@ public class ProxyFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getProxy(Class<T> interfaceClass, ServiceCenter serviceCenter) throws InterruptedException {
+    public static <T> T getProxy(Class<T> interfaceClass, ServiceCenter serviceCenter) {
 //        ServiceCenter serviceCenter = new LocalServiceCenter("localhost", 8080, RpcProtocol.TCP);
         Object proxyInstance = Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass},
                 (proxy, method, args) -> {

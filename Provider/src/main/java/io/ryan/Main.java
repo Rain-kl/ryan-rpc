@@ -9,7 +9,7 @@ import io.ryan.serviceCenter.ServiceCenter;
 import io.ryan.serviceImpl.HelloServiceImpl;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
 
         // 注册中心注册

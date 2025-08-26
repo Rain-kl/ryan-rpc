@@ -11,7 +11,7 @@ public class ZKDataWatcher {
 
     private final CuratorFramework client;
 
-    ServiceCache cache;
+    final ServiceCache cache;
 
     public ZKDataWatcher(CuratorFramework client, ServiceCache cache) {
         this.client = client;
