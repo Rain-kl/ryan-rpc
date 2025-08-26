@@ -16,6 +16,11 @@ public class BaseServiceCenter implements ServiceCenter {
     }
 
     @Override
+    public void register(Class<?> service, Boolean retry) {
+        serviceCenter.register(service, retry);
+    }
+
+    @Override
     public void start(ServiceURI uri) throws Exception {
         serviceCenter.start(uri);
     }
@@ -23,5 +28,10 @@ public class BaseServiceCenter implements ServiceCenter {
     @Override
     public ServiceURI serviceDiscovery(Class<?> service) {
         return serviceCenter.serviceDiscovery(service);
+    }
+
+    @Override
+    public boolean checkRetry(String interfaceName) {
+        return serviceCenter.checkRetry(interfaceName);
     }
 }

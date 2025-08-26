@@ -8,7 +8,7 @@ public class LocalServiceCenter implements ServiceCenter {
     static ServiceURI serviceURI = null;
 
     public LocalServiceCenter(Type type) {
-        if(type==Type.Client && serviceURI==null){
+        if (type == Type.Client && serviceURI == null) {
             throw new IllegalStateException("连接参数未配置");
         }
     }
@@ -23,6 +23,11 @@ public class LocalServiceCenter implements ServiceCenter {
     }
 
     @Override
+    public void register(Class<?> service, Boolean retry) {
+        register(service);
+    }
+
+    @Override
     public void start(ServiceURI uri) {
         LocalServiceCenter.serviceURI = uri;
         System.out.println("Local Service Center started at " + uri);
@@ -31,6 +36,11 @@ public class LocalServiceCenter implements ServiceCenter {
     @Override
     public ServiceURI serviceDiscovery(Class<?> service) {
         return serviceURI;
+    }
+
+    @Override
+    public boolean checkRetry(String interfaceName) {
+        return false;
     }
 
     public enum Type {

@@ -4,21 +4,21 @@ import io.ryan.protocol.server.NettServerImpl.NettyServer;
 import io.ryan.protocol.server.RpcServer;
 import io.ryan.protocol.server.RpcServerBuilder;
 import io.ryan.serviceCenter.BaseServiceCenter;
-import io.ryan.serviceCenter.LocalServiceCenter;
 import io.ryan.serviceCenter.ServiceCenter;
+import io.ryan.serviceCenter.zookeeperImpl.ZKCenter;
 import io.ryan.serviceImpl.HelloServiceImpl;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
 
         // 注册中心注册
         ServiceCenter serviceCenter = new BaseServiceCenter(
-//                new ZKCenter("localhost", 2181)
-                new LocalServiceCenter(LocalServiceCenter.Type.Server)
+                new ZKCenter("localhost", 2181)
+//                new LocalServiceCenter(LocalServiceCenter.Type.Server)
         );
 //        ServiceCenter zkCenter =
-        serviceCenter.register(HelloServiceImpl.class);
+        serviceCenter.register(HelloServiceImpl.class, true);
 
         RpcServer server = RpcServerBuilder.builder()
                 .host("localhost")

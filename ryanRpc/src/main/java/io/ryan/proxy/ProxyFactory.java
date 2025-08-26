@@ -6,6 +6,7 @@ import io.ryan.common.Message.RpcResponse;
 import io.ryan.common.constant.RpcProtocol;
 import io.ryan.common.dto.ServiceURI;
 import io.ryan.loadbalance.impl.RandomLoadBalance;
+import io.ryan.protocol.client.GuavaRetry;
 import io.ryan.protocol.client.HttpClient.HttpClientImpl;
 import io.ryan.protocol.client.NettyClientImpl.NettyClient;
 import io.ryan.protocol.client.RpcClient;
@@ -38,8 +39,15 @@ public class ProxyFactory {
 //                    // 从注册中心获取服务提供者的地址列表
                     ServiceURI serviceURI = serviceCenter.serviceDiscovery(interfaceClass);
                     RpcClient rpcClient = getRpcClient(serviceURI);
-                    RpcResponse rpcResponse = rpcClient.sendRequest(rpcRequest);
 
+                    RpcResponse rpcResponse;
+                    if (serviceCenter.checkRetry(rpcRequest.getInterfaceName())){
+                        //调用retry框架进行重试操作
+                        rpcResponse=new GuavaRetry().sendServiceWithRetry(rpcRequest,rpcClient);
+                    }else {
+                        //只调用一次
+                        rpcResponse= rpcClient.sendRequest(rpcRequest);
+                    }
                     return rpcResponse.getData();
                 });
 

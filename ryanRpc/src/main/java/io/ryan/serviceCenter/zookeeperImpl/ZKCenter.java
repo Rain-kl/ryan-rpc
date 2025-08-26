@@ -28,6 +28,8 @@ public class ZKCenter implements ServiceCenter {
     private LoadBalance<String> loadBalancePolicy;
 
     private List<String> services = new ArrayList<>();
+    private static final String RETRY = "CanRetry";
+
 
     private String hostname;
     private Integer port;
@@ -43,6 +45,7 @@ public class ZKCenter implements ServiceCenter {
         initZookeeperConnection(hostname, port);
         this.loadBalancePolicy = loadBalancePolicy;
     }
+    private List<String> retryWhiteList = new ArrayList<>();
 
     private void initZookeeperConnection(String hostname, Integer port) throws InterruptedException {
         this.hostname = hostname;
@@ -57,7 +60,7 @@ public class ZKCenter implements ServiceCenter {
                 .namespace(ROOT_PATH)
                 .build();
         this.client.start();
-        System.out.println("zookeeper 连接成功");
+        System.out.println("connecting zookeeper");
         ZKDataWatcher zkDataWatcher = new ZKDataWatcher(client, serviceCache);
         zkDataWatcher.watchToUpdate(ROOT_PATH);
     }
@@ -69,47 +72,18 @@ public class ZKCenter implements ServiceCenter {
      */
     @Override
     public void register(Class<?> service) {
+        register(service, false);
+    }
+
+    @Override
+    public void register(Class<?> service, Boolean retry) {
         ServiceProvider.register(service);
         for(Class<?> serviceInterface:service.getInterfaces()){
             String interfaceName = serviceInterface.getName();
             if(!services.contains(interfaceName))
                 services.add(interfaceName);
-        }
-    }
-
-    /**
-     * 提交注册的服务到zookeeper
-     *
-     * @param serviceURI 服务地址
-     */
-    @Override
-    public void start(ServiceURI serviceURI) throws Exception {
-        for (String serviceName : services) {
-            // 因为存入的 uri 如果携带/则无法创建节点,所以需要encode
-            String path = "/" + serviceName + "/" + serviceURI.encode();
-            String servicePath = "/" + serviceName;
-            // 先确保服务名是持久节点
-            if (client.checkExists().forPath(servicePath) == null) {
-                try {
-                    client.create().creatingParentsIfNeeded()
-                            .withMode(CreateMode.PERSISTENT)
-                            .forPath(servicePath);
-                } catch (KeeperException.NodeExistsException ignore) {
-                }
-            }
-            int retry = 2;
-            while (true) {
-                try {
-                    client.create().withMode(CreateMode.EPHEMERAL).forPath(path);
-                    return; // ok
-                } catch (KeeperException.NodeExistsException e) {
-                    // 通常是 session 未过期导致的“幽灵节点”，或重复启动
-                    // 安全做法：检查会话是否自己创建的不可行（ACL 未设置），这里直接“幂等化”处理：认为注册已存在即可
-                    if (retry-- <= 0) return;
-                    Thread.sleep(200L);
-                }
-            }
-
+            if(retry && !retryWhiteList.contains(interfaceName))
+                retryWhiteList.add(interfaceName);
         }
     }
 
@@ -134,5 +108,64 @@ public class ZKCenter implements ServiceCenter {
         } catch (Exception e) {
             throw new RuntimeException("服务发现失败", e);
         }
+    }
+
+    /**
+     * 提交注册的服务到zookeeper
+     *
+     * @param serviceURI 服务地址
+     */
+    @Override
+    public void start(ServiceURI serviceURI) throws Exception {
+        for (String serviceName : services) {
+            // 因为存入的 uri 如果携带/则无法创建节点,所以需要encode
+            String path = "/" + serviceName + "/" + serviceURI.encode();
+            String servicePath = "/" + serviceName;
+            // 先确保服务名是持久节点
+            if (client.checkExists().forPath(servicePath) == null) {
+                try {
+                    client.create().creatingParentsIfNeeded()
+                            .withMode(CreateMode.PERSISTENT)
+                            .forPath(servicePath);
+                } catch (KeeperException.NodeExistsException ignore) {
+                }
+            }
+            int retry = 2;
+
+            while (true) {
+                try {
+                    client.create().withMode(CreateMode.EPHEMERAL).forPath(path);
+                    String retryPath ="/"+RETRY+"/"+serviceName;
+                    if( retryWhiteList.contains(serviceName) && client.checkExists().forPath(retryPath) == null){
+                        client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(retryPath);
+                    }
+
+                    return; // ok
+                } catch (KeeperException.NodeExistsException e) {
+                    // 通常是 session 未过期导致的“幽灵节点”，或重复启动
+                    // 安全做法：检查会话是否自己创建的不可行（ACL 未设置），这里直接“幂等化”处理：认为注册已存在即可
+                    client.delete().forPath(path);
+                    if (retry-- <= 0) throw new RuntimeException("服务注册失败：节点已存在且多次重试仍然存在");
+                    Thread.sleep(200L);
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean checkRetry(String interfaceName) {
+        boolean canRetry =false;
+        try {
+            List<String> serviceList = client.getChildren().forPath("/" + RETRY);
+            for(String s:serviceList){
+                if(s.equals(interfaceName)){
+                    System.out.println("服务"+interfaceName+"在白名单上，可进行重试");
+                    canRetry=true;
+                }
+            }
+        }catch (Exception e) {
+            log.trace("检查重试失败", e);
+        }
+        return canRetry;
     }
 }

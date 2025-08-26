@@ -1,15 +1,16 @@
 package io.ryan;
 
-import io.ryan.common.constant.RpcProtocol;
+import io.ryan.loadbalance.impl.RoundLoadBalance;
 import io.ryan.proxy.ProxyFactory;
 import io.ryan.service.HelloService;
-import io.ryan.serviceCenter.LocalServiceCenter;
+import io.ryan.serviceCenter.zookeeperImpl.ZKCenter;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         HelloService helloService = ProxyFactory.getProxy(
                 HelloService.class,
-                new LocalServiceCenter("localhost", 8080, RpcProtocol.TCP)
+                new ZKCenter("localhost", 2181, new RoundLoadBalance<>())
+//                new LocalServiceCenter("localhost", 8080, RpcProtocol.TCP)
         );
         String result;
         result = helloService.sayHello("Ryan");
