@@ -5,7 +5,7 @@ import io.ryan.common.Message.RpcRequest;
 import io.ryan.common.Message.RpcResponse;
 import io.ryan.common.constant.RpcProtocol;
 import io.ryan.common.dto.ServiceURI;
-import io.ryan.loadbalance.RandomLoadBalance;
+import io.ryan.loadbalance.impl.RandomLoadBalance;
 import io.ryan.protocol.client.HttpClient.HttpClientImpl;
 import io.ryan.protocol.client.NettyClientImpl.NettyClient;
 import io.ryan.protocol.client.RpcClient;
