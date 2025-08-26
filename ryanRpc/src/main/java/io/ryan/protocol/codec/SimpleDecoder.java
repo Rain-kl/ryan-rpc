@@ -1,12 +1,12 @@
-package io.ryan.common.utils;
+package io.ryan.protocol.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.ryan.Serializer.Serializer;
 import io.ryan.common.Message.MessageType;
 import io.ryan.common.Message.RpcRequest;
 import io.ryan.common.Message.RpcResponse;
+import io.ryan.common.utils.Serializer.Serializer;
 
 import java.util.List;
 

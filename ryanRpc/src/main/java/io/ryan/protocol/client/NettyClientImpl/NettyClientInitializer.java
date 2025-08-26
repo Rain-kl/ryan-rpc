@@ -3,9 +3,9 @@ package io.ryan.protocol.client.NettyClientImpl;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.ryan.Serializer.JsonSerializer;
-import io.ryan.common.utils.SimpleDecoder;
-import io.ryan.common.utils.SimpleEncoder;
+import io.ryan.common.utils.Serializer.JsonSerializer;
+import io.ryan.protocol.codec.SimpleDecoder;
+import io.ryan.protocol.codec.SimpleEncoder;
 
 public class NettyClientInitializer extends ChannelInitializer<SocketChannel> {
     @Override
