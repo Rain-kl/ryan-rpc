@@ -1,12 +1,12 @@
 package io.ryan.serviceCenter;
 
 import io.ryan.common.dto.ServiceURI;
+import io.ryan.ratelimit.RateLimit;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 
-@Data
+
 @AllArgsConstructor
-public class BaseServiceCenter implements ServiceCenter {
+public class BaseServiceCenter extends ServiceCenter {
 
     private ServiceCenter serviceCenter;
 
@@ -18,6 +18,11 @@ public class BaseServiceCenter implements ServiceCenter {
     @Override
     public void register(Class<?> service, Boolean retry) {
         serviceCenter.register(service, retry);
+    }
+
+    @Override
+    public void register(Class<?> service, Boolean retry, RateLimit rateLimit) {
+        serviceCenter.register(service, retry, rateLimit);
     }
 
     @Override
@@ -33,5 +38,10 @@ public class BaseServiceCenter implements ServiceCenter {
     @Override
     public boolean checkRetry(String interfaceName) {
         return serviceCenter.checkRetry(interfaceName);
+    }
+
+    @Override
+    public void setGlobalRateLimit(RateLimit globalRateLimit) {
+        serviceCenter.setGlobalRateLimit(globalRateLimit);
     }
 }

@@ -5,6 +5,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.ryan.common.Message.RpcRequest;
 import io.ryan.common.Message.RpcResponse;
 import io.ryan.provider.ServiceProvider;
+import io.ryan.ratelimit.RateLimit;
+import io.ryan.ratelimit.RateLimitRegistry;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,10 +22,18 @@ public class NettyHandler extends SimpleChannelInboundHandler<RpcRequest> {
     private static RpcResponse getResponse(RpcRequest rpcRequest)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         String interfaceName = rpcRequest.getInterfaceName();
+        if (!rateLimitHandler(interfaceName)) {
+            return RpcResponse.fail(429, "请求过于频繁，请稍后再试");
+        }
         Class<?> classImpl = ServiceProvider.getService(interfaceName);
         Method method = classImpl.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
         Object result = method.invoke(classImpl.getDeclaredConstructor().newInstance(), rpcRequest.getParameters());
         return RpcResponse.success(result);
+    }
+
+    private static boolean rateLimitHandler(String interfaceName) {
+        RateLimit rateLimiter = RateLimitRegistry.INSTANCE.get(interfaceName);
+        return rateLimiter.getToken();
     }
 
 }

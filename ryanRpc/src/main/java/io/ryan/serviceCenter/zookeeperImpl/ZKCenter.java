@@ -4,9 +4,11 @@ import io.ryan.common.dto.ServiceURI;
 import io.ryan.loadbalance.LoadBalance;
 import io.ryan.loadbalance.impl.RandomLoadBalance;
 import io.ryan.provider.ServiceProvider;
+import io.ryan.ratelimit.RateLimit;
 import io.ryan.serviceCenter.ServiceCenter;
 import io.ryan.serviceCenter.cache.ServiceCache;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -18,9 +20,11 @@ import org.apache.zookeeper.KeeperException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+
 @Slf4j
-public class ZKCenter implements ServiceCenter {
+@Getter
+@Setter
+public class ZKCenter extends ServiceCenter {
     // curator 提供的zookeeper客户端
     private CuratorFramework client;
     //zookeeper根路径节点
@@ -45,6 +49,7 @@ public class ZKCenter implements ServiceCenter {
         initZookeeperConnection(hostname, port);
         this.loadBalancePolicy = loadBalancePolicy;
     }
+
     private List<String> retryWhiteList = new ArrayList<>();
 
     private void initZookeeperConnection(String hostname, Integer port) throws InterruptedException {
@@ -77,12 +82,18 @@ public class ZKCenter implements ServiceCenter {
 
     @Override
     public void register(Class<?> service, Boolean retry) {
-        ServiceProvider.register(service);
-        for(Class<?> serviceInterface:service.getInterfaces()){
+        register(service, retry, globalRateLimit);
+
+    }
+
+    @Override
+    public void register(Class<?> service, Boolean retry, RateLimit rateLimit) {
+        ServiceProvider.register(service, rateLimit);
+        for (Class<?> serviceInterface : service.getInterfaces()) {
             String interfaceName = serviceInterface.getName();
-            if(!services.contains(interfaceName))
+            if (!services.contains(interfaceName))
                 services.add(interfaceName);
-            if(retry && !retryWhiteList.contains(interfaceName))
+            if (retry && !retryWhiteList.contains(interfaceName))
                 retryWhiteList.add(interfaceName);
         }
     }
@@ -135,8 +146,8 @@ public class ZKCenter implements ServiceCenter {
             while (true) {
                 try {
                     client.create().withMode(CreateMode.EPHEMERAL).forPath(path);
-                    String retryPath ="/"+RETRY+"/"+serviceName;
-                    if( retryWhiteList.contains(serviceName) && client.checkExists().forPath(retryPath) == null){
+                    String retryPath = "/" + RETRY + "/" + serviceName;
+                    if (retryWhiteList.contains(serviceName) && client.checkExists().forPath(retryPath) == null) {
                         client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(retryPath);
                     }
 
@@ -154,16 +165,16 @@ public class ZKCenter implements ServiceCenter {
 
     @Override
     public boolean checkRetry(String interfaceName) {
-        boolean canRetry =false;
+        boolean canRetry = false;
         try {
             List<String> serviceList = client.getChildren().forPath("/" + RETRY);
-            for(String s:serviceList){
-                if(s.equals(interfaceName)){
-                    System.out.println("服务"+interfaceName+"在白名单上，可进行重试");
-                    canRetry=true;
+            for (String s : serviceList) {
+                if (s.equals(interfaceName)) {
+                    System.out.println("服务" + interfaceName + "在白名单上，可进行重试");
+                    canRetry = true;
                 }
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.trace("检查重试失败", e);
         }
         return canRetry;

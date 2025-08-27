@@ -2,10 +2,12 @@ package io.ryan.serviceCenter;
 
 import io.ryan.common.dto.ServiceURI;
 import io.ryan.provider.ServiceProvider;
+import io.ryan.ratelimit.RateLimit;
 
-public class LocalServiceCenter implements ServiceCenter {
+public class LocalServiceCenter extends ServiceCenter {
 
     static ServiceURI serviceURI = null;
+
 
     public LocalServiceCenter(Type type) {
         if (type == Type.Client && serviceURI == null) {
@@ -19,12 +21,17 @@ public class LocalServiceCenter implements ServiceCenter {
 
     @Override
     public void register(Class<?> service) {
-        ServiceProvider.register(service);
+        register(service, false, globalRateLimit);
     }
 
     @Override
     public void register(Class<?> service, Boolean retry) {
-        register(service);
+        register(service, retry, globalRateLimit);
+    }
+
+    @Override
+    public void register(Class<?> service, Boolean retry, RateLimit rateLimit) {
+        ServiceProvider.register(service, globalRateLimit);
     }
 
     @Override

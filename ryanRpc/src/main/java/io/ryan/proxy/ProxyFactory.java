@@ -41,12 +41,12 @@ public class ProxyFactory {
                     RpcClient rpcClient = getRpcClient(serviceURI);
 
                     RpcResponse rpcResponse;
-                    if (serviceCenter.checkRetry(rpcRequest.getInterfaceName())){
+                    if (serviceCenter.checkRetry(rpcRequest.getInterfaceName())) {
                         //调用retry框架进行重试操作
-                        rpcResponse=new GuavaRetry().sendServiceWithRetry(rpcRequest,rpcClient);
-                    }else {
+                        rpcResponse = GuavaRetry.sendServiceWithRetry(rpcRequest, rpcClient);
+                    } else {
                         //只调用一次
-                        rpcResponse= rpcClient.sendRequest(rpcRequest);
+                        rpcResponse = rpcClient.sendRequest(rpcRequest);
                     }
                     return rpcResponse.getData();
                 });
