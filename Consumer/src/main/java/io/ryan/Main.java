@@ -3,7 +3,7 @@ package io.ryan;
 import io.ryan.loadbalance.impl.RoundLoadBalance;
 import io.ryan.proxy.ProxyFactory;
 import io.ryan.service.HelloService;
-import io.ryan.serviceCenter.zookeeperImpl.ZKCenter;
+import io.ryan.serviceCenter.impl.zooKeeperImpl.ZKCenter;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {

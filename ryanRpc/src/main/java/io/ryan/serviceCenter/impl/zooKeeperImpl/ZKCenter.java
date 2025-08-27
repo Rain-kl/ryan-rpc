@@ -1,11 +1,11 @@
-package io.ryan.serviceCenter.zookeeperImpl;
+package io.ryan.serviceCenter.impl.zooKeeperImpl;
 
 import io.ryan.common.dto.ServiceURI;
 import io.ryan.loadbalance.LoadBalance;
 import io.ryan.loadbalance.impl.RandomLoadBalance;
 import io.ryan.provider.ServiceProvider;
 import io.ryan.ratelimit.RateLimit;
-import io.ryan.serviceCenter.ServiceCenter;
+import io.ryan.serviceCenter.AbstractServiceCenter;
 import io.ryan.serviceCenter.cache.ServiceCache;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 @Getter
 @Setter
-public class ZKCenter extends ServiceCenter {
+public class ZKCenter extends AbstractServiceCenter {
     // curator 提供的zookeeper客户端
     private CuratorFramework client;
     //zookeeper根路径节点

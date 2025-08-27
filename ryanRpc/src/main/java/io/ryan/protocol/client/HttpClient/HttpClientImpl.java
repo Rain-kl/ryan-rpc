@@ -3,19 +3,14 @@ package io.ryan.protocol.client.HttpClient;
 
 import io.ryan.common.Message.RpcRequest;
 import io.ryan.common.Message.RpcResponse;
-import io.ryan.protocol.client.RpcClient;
-import io.ryan.protocol.client.RpcClientAbs;
+import io.ryan.protocol.client.AbstractRpcClient;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class HttpClientImpl extends RpcClientAbs implements RpcClient {
+public class HttpClientImpl extends AbstractRpcClient {
 
     public HttpClientImpl(String hostname, Integer port) {
         super(hostname, port);

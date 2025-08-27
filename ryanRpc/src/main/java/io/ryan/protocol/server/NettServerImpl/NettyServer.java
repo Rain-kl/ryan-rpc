@@ -5,10 +5,10 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.ryan.common.constant.RpcProtocol;
-import io.ryan.protocol.server.RpcServer;
+import io.ryan.protocol.server.AbstractRpcServer;
 
 
-public class NettyServer extends RpcServer {
+public class NettyServer extends AbstractRpcServer {
 
     public NettyServer(String hostname, Integer port) {
         super(hostname, port);

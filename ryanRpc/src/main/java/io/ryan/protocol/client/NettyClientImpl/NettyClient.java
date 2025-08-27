@@ -9,11 +9,9 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import io.ryan.common.Message.RpcRequest;
 import io.ryan.common.Message.RpcResponse;
-import io.ryan.protocol.client.RpcClient;
-import io.ryan.protocol.client.RpcClientAbs;
+import io.ryan.protocol.client.AbstractRpcClient;
 
-public class NettyClient extends RpcClientAbs implements RpcClient {
-
+public class NettyClient extends AbstractRpcClient {
 
 
     public NettyClient(String hostname, Integer port) {
@@ -22,6 +20,7 @@ public class NettyClient extends RpcClientAbs implements RpcClient {
 
     private static final Bootstrap bootstrap;
     private static final EventLoopGroup eventLoopGroup;
+
     //netty客户端初始化
     static {
         eventLoopGroup = new NioEventLoopGroup();
@@ -29,6 +28,7 @@ public class NettyClient extends RpcClientAbs implements RpcClient {
         bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
                 .handler(new NettyClientInitializer());
     }
+
     @Override
     public RpcResponse sendRequest(RpcRequest rpcRequest) {
         try {

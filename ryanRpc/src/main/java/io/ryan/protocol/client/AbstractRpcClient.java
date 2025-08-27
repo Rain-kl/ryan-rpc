@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class RpcClientAbs {
+public abstract class AbstractRpcClient implements RpcClient{
     String hostname;
     Integer port;
 }

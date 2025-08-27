@@ -1,10 +1,11 @@
-package io.ryan.serviceCenter;
+package io.ryan.serviceCenter.impl;
 
 import io.ryan.common.dto.ServiceURI;
 import io.ryan.provider.ServiceProvider;
 import io.ryan.ratelimit.RateLimit;
+import io.ryan.serviceCenter.AbstractServiceCenter;
 
-public class LocalServiceCenter extends ServiceCenter {
+public class LocalServiceCenter extends AbstractServiceCenter {
 
     static ServiceURI serviceURI = null;
 

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class RpcServerBuilder extends RpcServer {
+public class RpcServerBuilder extends AbstractRpcServer {
 
     private String host;
     private Integer port;

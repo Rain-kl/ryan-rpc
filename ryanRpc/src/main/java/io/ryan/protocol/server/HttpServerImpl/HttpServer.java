@@ -1,7 +1,7 @@
 package io.ryan.protocol.server.HttpServerImpl;
 
 import io.ryan.common.constant.RpcProtocol;
-import io.ryan.protocol.server.RpcServer;
+import io.ryan.protocol.server.AbstractRpcServer;
 import org.apache.catalina.*;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
@@ -10,7 +10,7 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.startup.Tomcat;
 
 
-public class HttpServer extends RpcServer {
+public class HttpServer extends AbstractRpcServer {
 
     public HttpServer(String host, Integer port) {
         super(host, port);

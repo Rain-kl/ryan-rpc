@@ -6,9 +6,8 @@ import io.ryan.protocol.server.RpcServerBuilder;
 import io.ryan.ratelimit.RateLimit;
 import io.ryan.ratelimit.RateLimitRegistry;
 import io.ryan.ratelimit.impl.SimpleTokenBucketRateLimitImpl;
-import io.ryan.serviceCenter.BaseServiceCenter;
-import io.ryan.serviceCenter.ServiceCenter;
-import io.ryan.serviceCenter.zookeeperImpl.ZKCenter;
+import io.ryan.serviceCenter.AbstractServiceCenter;
+import io.ryan.serviceCenter.impl.zooKeeperImpl.ZKCenter;
 import io.ryan.serviceImpl.HelloServiceImpl;
 
 import java.util.concurrent.ConcurrentMap;
@@ -18,12 +17,11 @@ public class Main {
 
 
         // 注册中心注册
-        ServiceCenter serviceCenter = new BaseServiceCenter(
-                new ZKCenter("localhost", 2181)
+        AbstractServiceCenter serviceCenter = new ZKCenter("localhost", 2181);
 //                new LocalServiceCenter(LocalServiceCenter.Type.Server)
-        );
 
-        serviceCenter.setGlobalRateLimit(new SimpleTokenBucketRateLimitImpl(1,1));
+
+        serviceCenter.setGlobalRateLimit(new SimpleTokenBucketRateLimitImpl(1, 1));
         serviceCenter.register(HelloServiceImpl.class, true);
 
         RpcServer server = RpcServerBuilder.builder()

@@ -10,9 +10,8 @@ import io.ryan.protocol.client.GuavaRetry;
 import io.ryan.protocol.client.HttpClient.HttpClientImpl;
 import io.ryan.protocol.client.NettyClientImpl.NettyClient;
 import io.ryan.protocol.client.RpcClient;
-import io.ryan.serviceCenter.BaseServiceCenter;
 import io.ryan.serviceCenter.ServiceCenter;
-import io.ryan.serviceCenter.zookeeperImpl.ZKCenter;
+import io.ryan.serviceCenter.impl.zooKeeperImpl.ZKCenter;
 
 import java.lang.reflect.Proxy;
 
@@ -20,9 +19,7 @@ public class ProxyFactory {
 
 
     public static <T> T getProxy(Class<T> interfaceClass) throws InterruptedException {
-        ServiceCenter serviceCenter = new BaseServiceCenter(
-                new ZKCenter("localhost", 2181, new RandomLoadBalance<>())
-        );
+        ServiceCenter serviceCenter = new ZKCenter("localhost", 2181, new RandomLoadBalance<>());
         return ProxyFactory.getProxy(interfaceClass, serviceCenter);
     }
 

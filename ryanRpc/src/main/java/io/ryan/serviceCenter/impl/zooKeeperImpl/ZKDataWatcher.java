@@ -1,4 +1,4 @@
-package io.ryan.serviceCenter.zookeeperImpl;
+package io.ryan.serviceCenter.impl.zooKeeperImpl;
 
 import io.ryan.serviceCenter.cache.ServiceCache;
 import org.apache.curator.framework.CuratorFramework;
