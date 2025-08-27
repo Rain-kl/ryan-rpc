@@ -3,11 +3,13 @@ package io.ryan.protocol.server;
 import io.ryan.common.dto.ServiceURI;
 import io.ryan.serviceCenter.ServiceCenter;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
-public class RpcServerBuilder implements RpcServer {
+public class RpcServerBuilder extends RpcServer {
 
     private String host;
     private Integer port;
@@ -15,6 +17,14 @@ public class RpcServerBuilder implements RpcServer {
 
     private ServiceCenter serviceCenter;
 
+
+    public RpcServerBuilder(String host, Integer port, Class<?> rpcServer, ServiceCenter serviceCenter) {
+        super(host, port);
+        this.host = host;
+        this.port = port;
+        this.rpcServer = rpcServer;
+        this.serviceCenter = serviceCenter;
+    }
 
     @Override
     public void start() {

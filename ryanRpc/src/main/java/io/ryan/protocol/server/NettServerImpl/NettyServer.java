@@ -6,10 +6,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.ryan.common.constant.RpcProtocol;
 import io.ryan.protocol.server.RpcServer;
-import io.ryan.protocol.server.RpcServerAbs;
 
 
-public class NettyServer extends RpcServerAbs implements RpcServer {
+public class NettyServer extends RpcServer {
 
     public NettyServer(String hostname, Integer port) {
         super(hostname, port);
