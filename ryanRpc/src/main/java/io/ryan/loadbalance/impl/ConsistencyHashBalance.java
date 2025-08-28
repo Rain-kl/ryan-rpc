@@ -6,10 +6,11 @@ import io.ryan.loadbalance.LoadBalance;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+
 public class ConsistencyHashBalance implements LoadBalance<String> {
 
     // 建议可配置
-    private static final int BASE_VIRTUAL_NUM = 160;
+    static int BASE_VIRTUAL_NUM = 160;
     private final ReentrantReadWriteLock rw = new ReentrantReadWriteLock();
     // 使用不可变快照思路：所有查询只读 ring 引用；重建时整体替换
     private volatile NavigableMap<Long, String> ring = new TreeMap<>();
@@ -17,14 +18,15 @@ public class ConsistencyHashBalance implements LoadBalance<String> {
     // 用于检测 serviceList 是否变化（排序+join 后做一次指纹）
     private volatile String lastSignature = "";
 
-    @Override
-    public String select(List<String> list) {
-        throw new IllegalStateException("ConsistencyHashBalance requires a hash key. Please use balance(addressList, hashKey).");
+    public ConsistencyHashBalance() {
+    }
+
+    public ConsistencyHashBalance(List<String> addressList) {
+        ensureRingBuilt(addressList);
     }
 
     @Override
-    public String select(List<String> addressList, String hashKey) {
-        ensureRingBuilt(addressList);
+    public String select(String hashKey) {
         if (ring.isEmpty()) {
             throw new IllegalStateException("No available server nodes.");
         }
@@ -34,6 +36,22 @@ public class ConsistencyHashBalance implements LoadBalance<String> {
         return e.getValue();
     }
 
+    @Override
+    public String select(List<String> addressList, String hashKey) {
+        ensureRingBuilt(addressList);
+        return select(hashKey);
+    }
+
+
+    @Override
+    public String select() {
+        throw new IllegalStateException("ConsistencyHashBalance requires a hash key. Please use balance(addressList, hashKey).");
+    }
+
+    @Override
+    public String select(List<String> list) {
+        throw new IllegalStateException("ConsistencyHashBalance requires a hash key. Please use balance(addressList, hashKey).");
+    }
 
     // 动态加/删节点（可选：外部用全量替换更稳）
     public void addNode(String node) {
