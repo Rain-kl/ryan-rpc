@@ -1,4 +1,4 @@
-package io.ryan.common.utils.Serializer;
+package io.ryan.utils.Serializer;
 
 import com.alibaba.fastjson.JSONObject;
 import io.ryan.common.constant.SerializerType;

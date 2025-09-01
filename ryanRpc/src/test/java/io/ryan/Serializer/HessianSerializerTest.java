@@ -1,7 +1,7 @@
 package io.ryan.Serializer;
 
-import io.ryan.common.utils.Serializer.HessianSerializer;
-import io.ryan.common.utils.Serializer.Serializer;
+import io.ryan.utils.Serializer.HessianSerializer;
+import io.ryan.utils.Serializer.Serializer;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Test;

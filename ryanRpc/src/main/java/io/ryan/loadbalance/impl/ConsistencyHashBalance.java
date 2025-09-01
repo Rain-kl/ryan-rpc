@@ -1,7 +1,7 @@
 package io.ryan.loadbalance.impl;
 
-import io.ryan.common.utils.Hashing;
 import io.ryan.loadbalance.LoadBalance;
+import io.ryan.utils.Hashing;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;

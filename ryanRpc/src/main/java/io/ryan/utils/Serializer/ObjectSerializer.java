@@ -1,4 +1,4 @@
-package io.ryan.common.utils.Serializer;
+package io.ryan.utils.Serializer;
 
 import io.ryan.common.constant.SerializerType;
 

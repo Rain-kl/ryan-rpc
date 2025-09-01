@@ -1,7 +1,7 @@
 package io.ryan.Serializer;
 
 import io.ryan.common.Message.RpcRequest;
-import io.ryan.common.utils.Serializer.JsonSerializer;
+import io.ryan.utils.Serializer.JsonSerializer;
 import org.junit.Test;
 
 import java.util.Arrays;

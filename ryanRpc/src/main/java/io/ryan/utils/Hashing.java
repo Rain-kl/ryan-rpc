@@ -1,4 +1,4 @@
-package io.ryan.common.utils;
+package io.ryan.utils;
 
 import java.nio.charset.StandardCharsets;
 

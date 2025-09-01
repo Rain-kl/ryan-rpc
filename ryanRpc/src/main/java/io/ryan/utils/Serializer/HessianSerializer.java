@@ -1,4 +1,4 @@
-package io.ryan.common.utils.Serializer;
+package io.ryan.utils.Serializer;
 
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;

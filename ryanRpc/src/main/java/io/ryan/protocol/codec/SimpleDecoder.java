@@ -6,7 +6,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import io.ryan.common.Message.MessageType;
 import io.ryan.common.Message.RpcRequest;
 import io.ryan.common.Message.RpcResponse;
-import io.ryan.common.utils.Serializer.Serializer;
+import io.ryan.utils.Serializer.Serializer;
 
 import java.util.List;
 
