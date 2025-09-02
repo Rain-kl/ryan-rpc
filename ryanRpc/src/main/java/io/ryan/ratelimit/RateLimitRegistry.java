@@ -10,25 +10,24 @@ public enum RateLimitRegistry {
 
     private static final RateLimit defaultRateLimit = new NoRateLimit();
 
-    private final ConcurrentMap<String, RateLimit> map =
-            new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, RateLimit> rateLimitMap = new ConcurrentHashMap<>();
 
     public RateLimit get(String interfaceName) {
-        if (!map.containsKey(interfaceName)) {
+        if (!rateLimitMap.containsKey(interfaceName)) {
             return defaultRateLimit;
         }
-        return map.get(interfaceName);
+        return rateLimitMap.get(interfaceName);
     }
 
     public void put(String interfaceName, RateLimit rl) {
-        map.put(interfaceName, rl);
+        rateLimitMap.put(interfaceName, rl);
     }
 
     public void remove(String interfaceName) {
-        map.remove(interfaceName);
+        rateLimitMap.remove(interfaceName);
     }
 
     public ConcurrentMap<String, RateLimit> getAll() {
-        return map;
+        return rateLimitMap;
     }
 }

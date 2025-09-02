@@ -19,7 +19,7 @@ public class GuavaRetry {
                 //返回结果为 error时进行重试
                 .retryIfResult(response -> {
                     if (response != null) {
-                        return Set.of(500,501).contains(response.getCode());
+                        return Set.of(500,501,429).contains(response.getCode());
                     }
                     return false;
                 })

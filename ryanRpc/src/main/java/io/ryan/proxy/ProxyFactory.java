@@ -13,9 +13,11 @@ import io.ryan.protocol.client.NettyClientImpl.NettyClient;
 import io.ryan.protocol.client.RpcClient;
 import io.ryan.serviceCenter.ServiceCenter;
 import io.ryan.serviceCenter.impl.zooKeeperImpl.ZKCenter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Proxy;
 
+@Slf4j
 public class ProxyFactory {
 
     public static ServiceCenter serviceCenter;
@@ -40,44 +42,50 @@ public class ProxyFactory {
 //        ServiceCenter serviceCenter = new LocalServiceCenter("localhost", 8080, RpcProtocol.TCP);
         Object proxyInstance = Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass},
                 (proxy, method, args) -> {
-                    RpcRequest rpcRequest = RpcRequest.builder()
-                            .interfaceName(interfaceClass.getName())
-                            .methodName(method.getName())
-                            .parameterTypes(method.getParameterTypes())
-                            .parameters(args).build();
 
-                    //获取熔断器
-                    CircuitBreaker circuitBreaker=circuitBreakerProvider.getCircuitBreaker(method.getName());
+                    try {
+                        RpcRequest rpcRequest = RpcRequest.builder()
+                                .interfaceName(interfaceClass.getName())
+                                .methodName(method.getName())
+                                .parameterTypes(method.getParameterTypes())
+                                .parameters(args).build();
 
-                    //判断熔断器是否允许请求经过
-                    if (!circuitBreaker.allowRequest()){
-                        //这里可以针对熔断做特殊处理，返回特殊值
-                        return null;
-                    }
+                        //获取熔断器
+                        CircuitBreaker circuitBreaker = circuitBreakerProvider.getCircuitBreaker(method.getName());
+
+                        //判断熔断器是否允许请求经过
+                        if (!circuitBreaker.allowRequest()) {
+                            //这里可以针对熔断做特殊处理，返回特殊值
+                            return null;
+                        }
 
 //                    // 从注册中心获取服务提供者的地址列表
-                    ServiceURI serviceURI = serviceCenter.serviceDiscovery(interfaceClass);
-                    RpcClient rpcClient = getRpcClient(serviceURI);
+                        ServiceURI serviceURI = serviceCenter.serviceDiscovery(interfaceClass);
+                        RpcClient rpcClient = getRpcClient(serviceURI);
 
-                    RpcResponse rpcResponse;
-                    if (serviceCenter.checkRetry(rpcRequest.getInterfaceName())) {
-                        //调用retry框架进行重试操作
-                        rpcResponse = GuavaRetry.sendServiceWithRetry(rpcRequest, rpcClient);
-                    } else {
-                        //只调用一次
-                        rpcResponse = rpcClient.sendRequest(rpcRequest);
-                    }
+                        RpcResponse rpcResponse;
+                        if (serviceCenter.checkRetry(rpcRequest.getInterfaceName())) {
+                            //调用retry框架进行重试操作
+                            rpcResponse = GuavaRetry.sendServiceWithRetry(rpcRequest, rpcClient);
+                        } else {
+                            //只调用一次
+                            rpcResponse = rpcClient.sendRequest(rpcRequest);
+                        }
 
-                    //记录response的状态，上报给熔断器
-                    if (rpcResponse.getCode() ==200){
-                        circuitBreaker.recordSuccess();
+                        //记录response的状态，上报给熔断器
+                        if (rpcResponse.getCode() == 200) {
+                            circuitBreaker.recordSuccess();
+                        }
+                        if (rpcResponse.getCode() == 429) {
+                            circuitBreaker.recordFailure();
+                        }
+                        return rpcResponse.getData();
+                    } catch (Exception e) {
+                        log.trace(e.getMessage(), e);
+                        throw new RuntimeException(e);
                     }
-                    if (rpcResponse.getCode()==429){
-                        circuitBreaker.recordFailure();
-                    }
-
-                    return rpcResponse.getData();
                 });
+
 
         return (T) proxyInstance;
     }

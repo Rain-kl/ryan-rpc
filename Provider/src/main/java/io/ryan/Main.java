@@ -5,6 +5,7 @@ import io.ryan.protocol.server.RpcServer;
 import io.ryan.protocol.server.RpcServerBuilder;
 import io.ryan.ratelimit.RateLimit;
 import io.ryan.ratelimit.RateLimitRegistry;
+import io.ryan.ratelimit.impl.AdvancedTokenBucketRateLimitImpl;
 import io.ryan.ratelimit.impl.SimpleTokenBucketRateLimitImpl;
 import io.ryan.serviceCenter.AbstractServiceCenter;
 import io.ryan.serviceCenter.impl.zooKeeperImpl.ZKCenter;
@@ -21,8 +22,11 @@ public class Main {
 //                new LocalServiceCenter(LocalServiceCenter.Type.Server)
 
 
+        AdvancedTokenBucketRateLimitImpl tokenBucketRateLimit = new AdvancedTokenBucketRateLimitImpl(10, 10);
+        tokenBucketRateLimit.setWeight(HelloServiceImpl.class, 2);
+
         serviceCenter.setGlobalRateLimit(new SimpleTokenBucketRateLimitImpl(1, 1));
-        serviceCenter.register(HelloServiceImpl.class, true);
+        serviceCenter.register(HelloServiceImpl.class, true, tokenBucketRateLimit);
 
         RpcServer server = RpcServerBuilder.builder()
                 .host("localhost")

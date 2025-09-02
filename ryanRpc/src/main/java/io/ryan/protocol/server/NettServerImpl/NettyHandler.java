@@ -33,7 +33,7 @@ public class NettyHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     private static boolean rateLimitHandler(String interfaceName) {
         RateLimit rateLimiter = RateLimitRegistry.INSTANCE.get(interfaceName);
-        return rateLimiter.getToken();
+        return rateLimiter.getToken(interfaceName);
     }
 
 }

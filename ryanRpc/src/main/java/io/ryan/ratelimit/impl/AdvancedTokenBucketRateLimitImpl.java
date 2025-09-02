@@ -2,13 +2,40 @@ package io.ryan.ratelimit.impl;
 
 import io.ryan.ratelimit.RateLimit;
 
+import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
+
+enum RateLimitWeight {
+    INSTANCE;
+
+    private static final ConcurrentHashMap<String, Integer> WeightMap = new ConcurrentHashMap<>();
+
+    public void put(String interfaceName, int weight) {
+        WeightMap.put(interfaceName, weight);
+    }
+
+    public int get(String interfaceName) {
+        return WeightMap.getOrDefault(interfaceName, 1);
+    }
+
+    public void remove(String interfaceName) {
+        WeightMap.remove(interfaceName);
+    }
+
+    public ConcurrentHashMap<String, Integer> getAll() {
+        return WeightMap;
+    }
+}
+
 /**
  * 标准 Token Bucket：
  * - tokensPerSecond：每秒补充多少令牌（可为小数）
  * - capacity：桶最大容量
  * - 使用 System.nanoTime()，避免系统时间回拨影响
  */
-public class SimpleTokenBucketRateLimitImpl implements RateLimit {
+public class AdvancedTokenBucketRateLimitImpl implements RateLimit {
+
+//    方法/参数维度的“成本权重”限流
 
     private final double tokensPerSecond;
     private final double capacity;
@@ -19,7 +46,7 @@ public class SimpleTokenBucketRateLimitImpl implements RateLimit {
     // 上次补桶的时间（纳秒，单调时钟）
     private long lastRefillNanos;
 
-    public SimpleTokenBucketRateLimitImpl(double tokensPerSecond, double capacity) {
+    public AdvancedTokenBucketRateLimitImpl(double tokensPerSecond, double capacity) {
         if (tokensPerSecond <= 0 || capacity <= 0) {
             throw new IllegalArgumentException("tokensPerSecond 和 capacity 必须为正数");
         }
@@ -29,11 +56,24 @@ public class SimpleTokenBucketRateLimitImpl implements RateLimit {
         this.lastRefillNanos = System.nanoTime();
     }
 
+    public void setWeight(String interfaceName, int weight) {
+        RateLimitWeight.INSTANCE.put(interfaceName, weight);
+    }
+
+    public void setWeight(Class<?> clazz, int weight) {
+        Arrays.stream(clazz.getInterfaces()).forEach(p -> RateLimitWeight.INSTANCE.put(p.getName(), weight));
+    }
+
+    public Integer getWeight(String interfaceName) {
+        return RateLimitWeight.INSTANCE.get(interfaceName);
+    }
+
     @Override
     public synchronized boolean getToken(String interfaceName) {
         refill();
         if (tokens >= 1.0) {
-            tokens -= 1.0;
+            System.out.println("TokenBucketRateLimit granted for " + interfaceName + ", tokens left: " + tokens);
+            tokens -= getWeight(interfaceName);
             return true;
         }
         return false;

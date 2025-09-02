@@ -11,6 +11,7 @@ public class RandomLoadBalance<T> implements LoadBalance<T> {
     List<T> addressList;
 
     public RandomLoadBalance() {
+        random = new Random();
     }
 
 
