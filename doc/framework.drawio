@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.6 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36" version="28.0.6">
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.1.2 Chrome/138.0.7204.243 Electron/37.4.0 Safari/537.36" version="28.1.2">
   <diagram name="第 1 页" id="nPo2o0PRnlDx6VbOVV2b">
-    <mxGraphModel dx="1188" dy="1812" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1426" dy="1941" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -198,7 +198,7 @@
         <mxCell id="Y1vPbgsseN96M4vT2CLB-2" value="" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#0080F0;shadow=0;dashed=0;shape=mxgraph.ios7.icons.reload;" parent="1" vertex="1">
           <mxGeometry x="1550" y="70" width="24" height="27" as="geometry" />
         </mxCell>
-        <mxCell id="LUDojROn2vz9iZoSnnhp-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="LUDojROn2vz9iZoSnnhp-1" target="qvEVlxeyxFjj9wp3Fzey-30">
+        <mxCell id="LUDojROn2vz9iZoSnnhp-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="LUDojROn2vz9iZoSnnhp-1" target="qvEVlxeyxFjj9wp3Fzey-30" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="200" y="-60" />
@@ -206,15 +206,15 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="LUDojROn2vz9iZoSnnhp-4" value="限流" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="LUDojROn2vz9iZoSnnhp-3">
+        <mxCell id="LUDojROn2vz9iZoSnnhp-4" value="限流" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LUDojROn2vz9iZoSnnhp-3" vertex="1" connectable="0">
           <mxGeometry x="0.0946" y="-2" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="LUDojROn2vz9iZoSnnhp-1" value="RateLimit" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+        <mxCell id="LUDojROn2vz9iZoSnnhp-1" value="RateLimit" style="whiteSpace=wrap;html=1;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="140" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="LUDojROn2vz9iZoSnnhp-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="LUDojROn2vz9iZoSnnhp-1" target="qvEVlxeyxFjj9wp3Fzey-2">
+        <mxCell id="LUDojROn2vz9iZoSnnhp-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="LUDojROn2vz9iZoSnnhp-1" target="qvEVlxeyxFjj9wp3Fzey-2" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="200" y="220" />
