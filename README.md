@@ -31,28 +31,15 @@ Ryan RPC 是一个高性能、可扩展的远程过程调用(RPC)框架，旨在
 
 ![framework.png](doc/framework.png)
 
-## 功能特性
-
-- **🚀 高性能**: 基于 Netty 的异步非阻塞 I/O，支持高并发场景
-- **🔧 多协议支持**: 支持 HTTP 和 TCP 两种通信协议
-- **📦 多序列化**: 支持 Java 原生、JSON 和 Hessian 三种序列化方式
-- **⚖️ 负载均衡**: 提供轮询、随机和一致性哈希等多种负载均衡算法
-- **🛡️ 容错机制**: 实现熔断器模式，提供多级限流控制，增强系统稳定性
-- **🔍 服务发现**: 支持本地和 ZooKeeper 两种服务注册中心
-- **🔄 重试机制**: 基于 Guava Retrying 的智能重试策略
-- **📊 监控支持**: 提供详细的性能指标和日志记录
-- **🏗️ 易于扩展**: 模块化设计，支持自定义组件扩展
-
 ## 技术栈
 
 - **核心框架**: Java 17, Maven
-- **网络通信**: Netty 4.1.119, Tomcat Embed 11.0.5
-- **服务发现**: Apache Curator 5.2.0 (ZooKeeper客户端)
-- **序列化**: Fastjson 1.2.83, Hessian 4.0.62
-- **重试机制**: Guava Retrying 2.0.0
-- **缓存**: Redis (Jedis 6.1.0)
-- **日志**: Logback 1.5.18
-- **工具**: Lombok 1.18.38, Commons-IO 2.19.0
+- **网络通信**: Netty , Tomcat Embed 
+- **服务发现**: Apache Curator  , Nacos Client 
+- **序列化**: Fastjson, Hessian 
+- **重试机制**: Guava Retrying 
+- **日志**: Logback
+- **工具**: Lombok, Commons-IO 
 
 ## 架构设计
 
@@ -77,10 +64,11 @@ Ryan RPC 采用分层架构设计，主要包括以下层次：
 
 ### 服务注册与发现
 
-支持两种服务注册中心实现：
+支持三种服务注册中心实现：
 
 - `LocalServiceCenter`: 本地服务注册中心，适用于单机测试
 - `ZKCenter`: 基于 ZooKeeper 的分布式服务注册中心
+- `NacosCenter`: 基于 Nacos 的分布式服务注册中心
 
 ### 网络通信
 
@@ -149,73 +137,73 @@ io.ryan
 ├── ratelimit               # 限流模块
 │   └── impl                # 具体实现
 ├── circuitBreaker          # 熔断器模块
-├── utils                   # 工具类模块
-│   └── Serializer          # 序列化工具
-└── Main                    # 启动类
+└── utils                   # 工具类模块
+    └── Serializer          # 序列化工具
+
 ```
 
 ### 重要文件说明
 
 #### 公共模块 (common)
 
-- `io.ryan.common.Message.RpcRequest`: RPC请求封装类，包含接口名、方法名、参数类型和参数值
-- `io.ryan.common.Message.RpcResponse`: RPC响应封装类，包含状态码、消息和返回数据
-- `io.ryan.common.dto.ServiceURI`: 服务URI封装类，包含主机名、端口和协议信息
-- `io.ryan.common.constant.RpcProtocol`: RPC协议常量定义（HTTP/TCP）
-- `io.ryan.common.constant.SerializerType`: 序列化类型常量定义
+- `common.Message.RpcRequest`: RPC请求封装类，包含接口名、方法名、参数类型和参数值
+- `common.Message.RpcResponse`: RPC响应封装类，包含状态码、消息和返回数据
+- `common.dto.ServiceURI`: 服务URI封装类，包含主机名、端口和协议信息
+- `common.constant.RpcProtocol`: RPC协议常量定义（HTTP/TCP）
+- `common.constant.SerializerType`: 序列化类型常量定义
 
 #### 通信协议模块 (protocol)
 
-- `io.ryan.protocol.server.RpcServer`: RPC服务端接口，定义启动和获取协议方法
-- `io.ryan.protocol.client.RpcClient`: RPC客户端接口，定义发送请求方法
-- `io.ryan.protocol.server.HttpServerImpl.HttpServer`: HTTP服务端实现
-- `io.ryan.protocol.server.NettServerImpl.NettyServer`: Netty服务端实现
-- `io.ryan.protocol.client.HttpClient.HttpClientImpl`: HTTP客户端实现
-- `io.ryan.protocol.client.NettyClientImpl.NettyClient`: Netty客户端实现
-- `io.ryan.protocol.codec.SimpleDecoder`: 简单解码器
-- `io.ryan.protocol.codec.SimpleEncoder`: 简单编码器
+- `protocol.server.RpcServer`: RPC服务端接口，定义启动和获取协议方法
+- `protocol.client.RpcClient`: RPC客户端接口，定义发送请求方法
+- `protocol.server.HttpServerImpl.HttpServer`: HTTP服务端实现
+- `protocol.server.NettServerImpl.NettyServer`: Netty服务端实现
+- `protocol.client.HttpClient.HttpClientImpl`: HTTP客户端实现
+- `protocol.client.NettyClientImpl.NettyClient`: Netty客户端实现
+- `protocol.codec.SimpleDecoder/SimpleEncoder`: 简单编/解码器
 
 #### 服务注册中心模块 (serviceCenter)
 
-- `io.ryan.serviceCenter.ServiceCenter`: 服务注册中心接口，定义服务注册、发现等方法
-- `io.ryan.serviceCenter.impl.LocalServiceCenter`: 本地服务注册中心实现
-- `io.ryan.serviceCenter.impl.zooKeeperImpl.ZKCenter`: ZooKeeper服务注册中心实现
-- `io.ryan.serviceCenter.cache.ServiceCache`: 服务缓存实现
+- `serviceCenter.ServiceCenter`: 服务注册中心接口，定义服务注册、发现等方法
+- `serviceCenter.impl.LocalServiceCenter`: 本地服务注册中心实现
+- `serviceCenter.impl.zooKeeperImpl.ZKCenter`: ZooKeeper服务注册中心实现
+- `serviceCenter.impl.nacosImpl.NacosCenter`: Nacos服务注册中心实现
+- `serviceCenter.cache.ServiceCache`: 服务缓存实现
 
 #### 代理模块 (proxy)
 
-- `io.ryan.proxy.ProxyFactory`: 动态代理工厂类，创建服务接口的代理实例
+- `proxy.ProxyFactory`: 动态代理工厂类，创建服务接口的代理实例
 
 #### 服务提供者模块 (provider)
 
-- `io.ryan.provider.ServiceProvider`: 服务提供者管理类，注册和获取服务实例
+- `provider.ServiceProvider`: 服务提供者管理类，注册和获取服务实例
 
 #### 负载均衡模块 (loadbalance)
 
-- `io.ryan.loadbalance.LoadBalance`: 负载均衡接口，定义选择策略方法
-- `io.ryan.loadbalance.impl.RoundLoadBalance`: 轮询负载均衡实现
-- `io.ryan.loadbalance.impl.RandomLoadBalance`: 随机负载均衡实现
-- `io.ryan.loadbalance.impl.ConsistencyHashBalance`: 一致性哈希负载均衡实现
+- `loadbalance.LoadBalance`: 负载均衡接口，定义选择策略方法
+- `loadbalance.impl.RoundLoadBalance`: 轮询负载均衡实现
+- `loadbalance.impl.RandomLoadBalance`: 随机负载均衡实现
+- `loadbalance.impl.ConsistencyHashBalance`: 一致性哈希负载均衡实现
 
 #### 限流模块 (ratelimit)
 
-- `io.ryan.ratelimit.RateLimit`: 限流接口，定义获取令牌方法
-- `io.ryan.ratelimit.impl.NoRateLimit`: 无限制实现
-- `io.ryan.ratelimit.impl.SimpleTokenBucketRateLimitImpl`: 简单令牌桶限流实现
-- `io.ryan.ratelimit.impl.AdvancedTokenBucketRateLimitImpl`: 高级令牌桶限流实现
-- `io.ryan.ratelimit.RateLimitRegistry`: 限流器注册表
+- `ratelimit.RateLimit`: 限流接口，定义获取令牌方法
+- `ratelimit.impl.NoRateLimit`: 无限制实现
+- `ratelimit.impl.SimpleTokenBucketRateLimitImpl`: 简单令牌桶限流实现
+- `ratelimit.impl.AdvancedTokenBucketRateLimitImpl`: 高级令牌桶限流实现
+- `ratelimit.RateLimitRegistry`: 限流器注册表
 
 #### 熔断器模块 (circuitBreaker)
 
-- `io.ryan.circuitBreaker.CircuitBreaker`: 熔断器实现，包含CLOSED、OPEN、HALF_OPEN三种状态
-- `io.ryan.circuitBreaker.CircuitBreakerProvider`: 熔断器提供者
+- `circuitBreaker.CircuitBreaker`: 熔断器实现，包含CLOSED、OPEN、HALF_OPEN三种状态
+- `circuitBreaker.CircuitBreakerProvider`: 熔断器提供者
 
 #### 序列化模块 (utils.Serializer)
 
-- `io.ryan.utils.Serializer.Serializer`: 序列化接口，定义序列化和反序列化方法
-- `io.ryan.utils.Serializer.ObjectSerializer`: Java原生序列化实现
-- `io.ryan.utils.Serializer.JsonSerializer`: JSON序列化实现
-- `io.ryan.utils.Serializer.HessianSerializer`: Hessian序列化实现
+- `utils.Serializer.Serializer`: 序列化接口，定义序列化和反序列化方法
+- `utils.Serializer.ObjectSerializer`: Java原生序列化实现
+- `utils.Serializer.JsonSerializer`: JSON序列化实现
+- `utils.Serializer.HessianSerializer`: Hessian序列化实现
 
 ## 快速开始
 
@@ -242,10 +230,41 @@ mvn -version
 如果你想使用 ZooKeeper 作为服务注册中心，需要先启动 ZooKeeper：
 
 ```bash
-# 下载并启动 ZooKeeper
-# 或使用 Docker
-docker run -d --name zookeeper -p 2181:2181 zookeeper:3.8
+version: '3.8'
+
+services:
+  zookeeper:
+    image: zookeeper:3.9
+    container_name: zookeeper
+    restart: always
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
 ```
+
+### 启动Nacos (可选)
+
+```
+version: '3.8'
+
+services:
+  nacos:
+    image: nacos/nacos-server:v2.4.3
+    container_name: nacos
+    ports:
+      - "127.0.0.1:8848:8848"
+      - "127.0.0.1:9848:9848"
+    environment:
+      - MODE=standalone
+    volumes:
+      - ./data:/home/nacos/data
+    restart: unless-stopped
+
+```
+
+
 
 ### 构建项目
 
@@ -259,25 +278,6 @@ mvn clean install
 ```
 
 ### 运行示例
-
-#### 方式一：使用 Maven 命令
-
-1. 启动服务提供者：
-
-```bash
-cd Provider
-mvn exec:java -Dexec.mainClass="io.ryan.Main"
-```
-
-2. 启动服务消费者（新开终端）：
-3. 
-
-```bash
-cd Consumer
-mvn exec:java -Dexec.mainClass="io.ryan.Main"
-```
-
-#### 方式二：使用 IDE
 
 1. 导入项目到 IntelliJ IDEA 或 Eclipse
 2. 运行 `Provider/src/main/java/io/ryan/Main.java`
@@ -455,7 +455,7 @@ RpcServerBuilder.builder()
     .build();
 ```
 
-#### HTTP 配置 (适用于调试和开发)
+#### HTTP 配置
 
 ```java
 RpcServerBuilder.builder()
@@ -477,11 +477,10 @@ RpcServerBuilder.builder()
 ### 负载均衡配置
 
 ```java
-// 在客户端代理创建时，框架会自动选择负载均衡策略
-// 可以通过系统属性配置：
-System.setProperty("rpc.loadbalance", "round");    // 轮询
-System.setProperty("rpc.loadbalance", "random");   // 随机
-System.setProperty("rpc.loadbalance", "hash");     // 一致性哈希
+//配置注册中心的时候指定是用什么负载均衡配置
+ProxyFactory.setServiceCenter(
+  new NacosCenter("localhost", 8848, new RoundLoadBalance<>())
+);
 ```
 
 ### 限流配置
@@ -490,6 +489,7 @@ System.setProperty("rpc.loadbalance", "hash");     // 一致性哈希
 
 ```java
 // 设置全局限流：每秒 100 个请求，桶容量 100
+// 这是共享限速器, 所有对象共用一个限速器对象
 serviceCenter.setGlobalRateLimit(new SimpleTokenBucketRateLimitImpl(100, 100));
 ```
 
@@ -499,6 +499,7 @@ serviceCenter.setGlobalRateLimit(new SimpleTokenBucketRateLimitImpl(100, 100));
 // 为特定服务设置限流
 AdvancedTokenBucketRateLimitImpl rateLimiter = 
     new AdvancedTokenBucketRateLimitImpl(50, 50);
+//为单独的服务设置权重,如果不设置默认权重都为 1
 rateLimiter.setWeight(HelloServiceImpl.class, 2);
 serviceCenter.register(HelloServiceImpl.class, true, rateLimiter);
 ```

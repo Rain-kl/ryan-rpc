@@ -29,7 +29,7 @@ public class NacosCenter extends AbstractServiceCenter {
 //    private static final String NAMESPACE = "ryan-rpc";
     private static final String NAMESPACE = "public";
     // 服务分组
-    private static final String GROUP_NAME = "DEFAULT_GROUP";
+    private static final String GROUP_NAME = "RyanRPC";
     // 重试白名单标识
     private static final String RETRY_METADATA_KEY = "canRetry";
     // 本地服务缓存

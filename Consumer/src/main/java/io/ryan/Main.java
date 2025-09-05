@@ -1,5 +1,6 @@
 package io.ryan;
 
+import io.ryan.loadbalance.impl.RoundLoadBalance;
 import io.ryan.proxy.ProxyFactory;
 import io.ryan.service.HelloService;
 import io.ryan.serviceCenter.impl.nacosImpl.NacosCenter;
@@ -18,7 +19,7 @@ public class Main {
     );
 
     public static void main(String[] args) throws InterruptedException {
-        ProxyFactory.setServiceCenter(new NacosCenter("localhost", 8848));
+        ProxyFactory.setServiceCenter(new NacosCenter("localhost", 8848, new RoundLoadBalance<>()));
         HelloService helloService = ProxyFactory.getProxy(
                 HelloService.class
         );
