@@ -8,7 +8,7 @@ import io.ryan.ratelimit.RateLimitRegistry;
 import io.ryan.ratelimit.impl.AdvancedTokenBucketRateLimitImpl;
 import io.ryan.ratelimit.impl.SimpleTokenBucketRateLimitImpl;
 import io.ryan.serviceCenter.AbstractServiceCenter;
-import io.ryan.serviceCenter.impl.zooKeeperImpl.ZKCenter;
+import io.ryan.serviceCenter.impl.nacosImpl.NacosCenter;
 import io.ryan.serviceImpl.HelloServiceImpl;
 
 import java.util.concurrent.ConcurrentMap;
@@ -18,7 +18,8 @@ public class Main {
 
 
         // 注册中心注册
-        AbstractServiceCenter serviceCenter = new ZKCenter("localhost", 2181);
+//        AbstractServiceCenter serviceCenter = new ZKCenter("localhost", 2181);
+        AbstractServiceCenter serviceCenter = new NacosCenter("localhost", 8848);
 //                new LocalServiceCenter(LocalServiceCenter.Type.Server)
 
 

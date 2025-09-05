@@ -2,7 +2,7 @@ package io.ryan;
 
 import io.ryan.proxy.ProxyFactory;
 import io.ryan.service.HelloService;
-import io.ryan.serviceCenter.impl.zooKeeperImpl.ZKCenter;
+import io.ryan.serviceCenter.impl.nacosImpl.NacosCenter;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -18,11 +18,11 @@ public class Main {
     );
 
     public static void main(String[] args) throws InterruptedException {
-        ProxyFactory.setServiceCenter(new ZKCenter("localhost", 2181));
+        ProxyFactory.setServiceCenter(new NacosCenter("localhost", 8848));
         HelloService helloService = ProxyFactory.getProxy(
                 HelloService.class
         );
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             final int index = i;
             executorService.submit(() -> {
                 String result = helloService.sayHello("Ryan " + index);
