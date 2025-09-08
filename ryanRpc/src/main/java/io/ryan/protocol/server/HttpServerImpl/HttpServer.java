@@ -12,6 +12,8 @@ import org.apache.catalina.startup.Tomcat;
 
 public class HttpServer extends AbstractRpcServer {
 
+    public static final String PROTOCOL = RpcProtocol.HTTP;
+
     public HttpServer(String host, Integer port) {
         super(host, port);
     }

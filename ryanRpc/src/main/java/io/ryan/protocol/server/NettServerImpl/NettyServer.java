@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NettyServer extends AbstractRpcServer {
 
+    public static final String PROTOCOL = RpcProtocol.TCP;
+
+
     ChannelFuture channelFuture;
 
     public NettyServer(String hostname, Integer port) {

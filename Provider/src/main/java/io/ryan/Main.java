@@ -1,7 +1,7 @@
 package io.ryan;
 
-import io.ryan.protocol.server.NettServerImpl.NettyServer;
-import io.ryan.protocol.server.RpcServer;
+import io.ryan.common.constant.RpcProtocol;
+import io.ryan.protocol.server.AbstractRpcServer;
 import io.ryan.protocol.server.RpcServerBuilder;
 import io.ryan.ratelimit.RateLimit;
 import io.ryan.ratelimit.RateLimitRegistry;
@@ -29,12 +29,10 @@ public class Main {
         serviceCenter.setGlobalRateLimit(new SimpleTokenBucketRateLimitImpl(1, 1));
         serviceCenter.register(HelloServiceImpl.class, true, tokenBucketRateLimit);
 
-        RpcServer server = RpcServerBuilder.builder()
-                .host("localhost")
-                .port(8080)
-                .rpcServer(NettyServer.class)
-                .serviceCenter(serviceCenter)
-                .build();
+        // 启动RPC服务器
+//        RpcServer server = new RpcServerBuilder("localhost", 8080, NettyServer.class,serviceCenter);
+        AbstractRpcServer server = RpcServerBuilder.forProtocol(RpcProtocol.TCP, "localhost", 8080, serviceCenter);
+
         ConcurrentMap<String, RateLimit> all = RateLimitRegistry.INSTANCE.getAll();
         for (String s : all.keySet()) {
             System.out.println("接口 " + s + " 的限流器为 " + all.get(s).toString());
