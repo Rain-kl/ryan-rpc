@@ -23,8 +23,8 @@ public class QuickStressTest {
             HelloService helloService = ProxyFactory.getProxy(HelloService.class);
             
             // 配置参数
-            int threadCount = 20;      // 并发线程数
-            int requestsPerThread = 100; // 每个线程的请求数
+            int threadCount = 50;      // 并发线程数
+            int requestsPerThread = 1000; // 每个线程的请求数
             int totalRequests = threadCount * requestsPerThread;
             
             System.out.println("测试配置:");

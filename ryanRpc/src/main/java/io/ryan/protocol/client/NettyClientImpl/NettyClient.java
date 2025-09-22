@@ -41,7 +41,7 @@ public class NettyClient extends AbstractRpcClient {
 
             AttributeKey<RpcResponse> key = AttributeKey.valueOf("RpcResponse");
             RpcResponse rpcResponse = channel.attr(key).get();
-            System.out.println(rpcResponse);
+//            System.out.println(rpcResponse);
 
             return rpcResponse;
 

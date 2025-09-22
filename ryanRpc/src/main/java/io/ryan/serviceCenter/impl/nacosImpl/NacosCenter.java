@@ -111,7 +111,7 @@ public class NacosCenter extends AbstractServiceCenter {
     public ServiceURI serviceDiscovery(Class<?> service) {
         List<String> serviceFromCache = serviceCache.getServiceFromCache(service.getName());
         if (serviceFromCache != null && !serviceFromCache.isEmpty()) {
-            log.info("cache hit");
+//            log.info("cache hit");
             Instance selectedInstance = loadBalancePolicy.select(convertToInstances(serviceFromCache));
             return new ServiceURI(selectedInstance.getIp(), selectedInstance.getPort(), 
                     selectedInstance.getMetadata().getOrDefault("protocol", "tcp"));

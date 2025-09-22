@@ -103,7 +103,7 @@ public class ZKCenter extends AbstractServiceCenter {
     public ServiceURI serviceDiscovery(Class<?> service) {
         List<String> serviceFromCache = serviceCache.getServiceFromCache(service.getName());
         if (serviceFromCache != null && !serviceFromCache.isEmpty()) {
-            log.info("cache hit");
+//            log.info("cache hit");
             return ServiceURI.decode(loadBalancePolicy.select(serviceFromCache));
         }
         try {
