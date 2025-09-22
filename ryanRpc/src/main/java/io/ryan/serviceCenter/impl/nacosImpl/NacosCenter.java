@@ -112,8 +112,9 @@ public class NacosCenter extends AbstractServiceCenter {
         List<String> serviceFromCache = serviceCache.getServiceFromCache(service.getName());
         if (serviceFromCache != null && !serviceFromCache.isEmpty()) {
             log.info("cache hit");
-            return ServiceURI.decode(loadBalancePolicy.select(convertToInstances(serviceFromCache)).getIp() + ":" +
-                    loadBalancePolicy.select(convertToInstances(serviceFromCache)).getPort());
+            Instance selectedInstance = loadBalancePolicy.select(convertToInstances(serviceFromCache));
+            return new ServiceURI(selectedInstance.getIp(), selectedInstance.getPort(), 
+                    selectedInstance.getMetadata().getOrDefault("protocol", "tcp"));
         }
 
         try {
@@ -187,7 +188,7 @@ public class NacosCenter extends AbstractServiceCenter {
             for (Instance instance : instances) {
                 String canRetry = instance.getMetadata().get(RETRY_METADATA_KEY);
                 if ("true".equals(canRetry)) {
-                    log.info("服务 {} 在重试白名单上，可进行重试", interfaceName);
+//                    log.info("服务 {} 在重试白名单上，可进行重试", interfaceName);
                     return true;
                 }
             }

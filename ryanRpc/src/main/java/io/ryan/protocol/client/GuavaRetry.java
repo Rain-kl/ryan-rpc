@@ -30,7 +30,7 @@ public class GuavaRetry {
                 .withRetryListener(new RetryListener() {
                     @Override
                     public <V> void onRetry(Attempt<V> attempt) {
-                        System.out.println("RetryListener: 第" + attempt.getAttemptNumber() + "次调用");
+//                        System.out.println("RetryListener: 第" + attempt.getAttemptNumber() + "次调用");
                     }
                 })
                 .build();

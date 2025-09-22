@@ -22,7 +22,7 @@ public class RoundLoadBalance<T> implements LoadBalance<T> {
     public T select() {
         choose++;
         choose = choose % addressList.size();
-        System.out.println("负载均衡选择了" + choose + "服务器");
+//        System.out.println("负载均衡选择了第" + choose + "服务器");
         return addressList.get(choose);
     }
 

@@ -5,8 +5,6 @@ import io.ryan.protocol.server.AbstractRpcServer;
 import io.ryan.protocol.server.RpcServerBuilder;
 import io.ryan.ratelimit.RateLimit;
 import io.ryan.ratelimit.RateLimitRegistry;
-import io.ryan.ratelimit.impl.AdvancedTokenBucketRateLimitImpl;
-import io.ryan.ratelimit.impl.SimpleTokenBucketRateLimitImpl;
 import io.ryan.serviceCenter.AbstractServiceCenter;
 import io.ryan.serviceCenter.impl.nacosImpl.NacosCenter;
 import io.ryan.serviceImpl.HelloServiceImpl;
@@ -23,11 +21,11 @@ public class Main {
 //                new LocalServiceCenter(LocalServiceCenter.Type.Server)
 
 
-        AdvancedTokenBucketRateLimitImpl tokenBucketRateLimit = new AdvancedTokenBucketRateLimitImpl(10, 10);
-        tokenBucketRateLimit.setWeight(HelloServiceImpl.class, 2);
+//        AdvancedTokenBucketRateLimitImpl tokenBucketRateLimit = new AdvancedTokenBucketRateLimitImpl(10, 10);
+//        tokenBucketRateLimit.setWeight(HelloServiceImpl.class, 2);
 
-        serviceCenter.setGlobalRateLimit(new SimpleTokenBucketRateLimitImpl(1, 1));
-        serviceCenter.register(HelloServiceImpl.class, true, tokenBucketRateLimit);
+//        serviceCenter.setGlobalRateLimit(new SimpleTokenBucketRateLimitImpl(1, 1));
+        serviceCenter.register(HelloServiceImpl.class, true);
 
         // 启动RPC服务器
 //        RpcServer server = new RpcServerBuilder("localhost", 8080, NettyServer.class,serviceCenter);

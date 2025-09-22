@@ -23,7 +23,7 @@ public class Main {
         HelloService helloService = ProxyFactory.getProxy(
                 HelloService.class
         );
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             final int index = i;
             executorService.submit(() -> {
                 String result = helloService.sayHello("Ryan " + index);
